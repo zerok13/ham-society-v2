@@ -1,12 +1,7 @@
-[images]
-  remote_images = ["https://source.unsplash.com/.*", "https://images.unsplash.com/.*", "https://ext.same-assets.com/.*", "https://ugc.same-assets.com/.*"]
-
 [build]
+  base    = "ham-society"
   command = "bun run build"
-  publish = ".next"
-
-[build.environment]
-  NETLIFY_NEXT_PLUGIN_SKIP = "true"
+  publish = "ham-society/.next"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
