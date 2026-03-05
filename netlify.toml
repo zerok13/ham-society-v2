@@ -1,6 +1,7 @@
 [build]
-  command = "cd ham-society && bun run build"
-  publish = "ham-society/.next"
+  command = "bun run build"
+  publish = ".next"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
