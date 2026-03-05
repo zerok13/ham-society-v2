@@ -1,0 +1,144 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 220 30% 20%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 30% 20%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 30% 20%;
+    --primary: 220 60% 22%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 220 30% 20%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 220 10% 45%;
+    --accent: 0 75% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 20% 88%;
+    --input: 220 20% 88%;
+    --ring: 220 60% 22%;
+    --radius: 0.5rem;
+    --ham-navy: #1a2e5a;
+    --ham-red: #c41e3a;
+    --ham-blue: #2e5aa7;
+    --ham-light-blue: #4a90c9;
+  }
+
+  .dark {
+    --background: 220 30% 10%;
+    --foreground: 0 0% 95%;
+    --card: 220 30% 12%;
+    --card-foreground: 0 0% 95%;
+    --popover: 220 30% 12%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 210 60% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 30% 18%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 220 30% 18%;
+    --muted-foreground: 220 10% 60%;
+    --accent: 0 75% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 20% 25%;
+    --input: 220 20% 25%;
+    --ring: 210 60% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ham-navy);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ham-blue);
+}
+
+/* Animation utilities */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animate-slideInLeft {
+  animation: slideInLeft 0.6s ease-out forwards;
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.6s ease-out forwards;
+}
+
+/* Hover transitions */
+.transition-hover {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+/* Navigation dropdown styles */
+.nav-dropdown {
+  @apply invisible opacity-0 translate-y-2 transition-all duration-200;
+}
+
+.nav-item:hover .nav-dropdown {
+  @apply visible opacity-100 translate-y-0;
+}

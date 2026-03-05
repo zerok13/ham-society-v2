@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  name         String
+  passwordHash String
+  phone        String?
+  affiliation  String?
+  specialty    String?
+  memberLevel  String
+  status       String    @default("pending")
+  createdAt    DateTime  @default(now())
+  downloads    Download[]
+  posts        BoardPost[]
+}
+
+model Presentation {
+  id        Int       @id @default(autoincrement())
+  title     String
+  author    String
+  date      String
+  type      String
+  key       String    @unique
+  hidden    Boolean   @default(false)
+  downloads Int       @default(0)
+  createdAt DateTime  @default(now())
+  downloadRecords Download[]
+}
+
+model Download {
+  id             Int          @id @default(autoincrement())
+  userId         Int
+  presentationId Int
+  createdAt      DateTime     @default(now())
+  user           User         @relation(fields: [userId], references: [id])
+  presentation   Presentation @relation(fields: [presentationId], references: [id])
+}
+
+model BoardPost {
+  id          Int          @id @default(autoincrement())
+  title       String
+  content     String
+  boardType   String
+  createdAt   DateTime     @default(now())
+  authorId    Int
+  author      User         @relation(fields: [authorId], references: [id])
+  attachments Attachment[]
+}
+
+model Attachment {
+  id       Int       @id @default(autoincrement())
+  key      String
+  filename String
+  postId   Int
+  post     BoardPost @relation(fields: [postId], references: [id])
+}
