@@ -1,8 +1,9 @@
 [build]
-  command = "bun run build"
+  command = "bunx prisma generate && bun run build"
   publish = ".next"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
 
 
