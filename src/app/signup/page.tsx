@@ -77,7 +77,7 @@ export default function SignupPage() {
           <div className="text-center mb-8">
             <div className="relative w-16 h-16 mx-auto mb-4">
               <Image
-                src="/monicalogo.png"
+                src="/logo.jpg"
                 alt="HAM 로고"
                 fill
                 className="object-contain"

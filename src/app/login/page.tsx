@@ -54,7 +54,7 @@ export default function LoginPage() {
           <div className="text-center mb-8">
             <div className="relative w-20 h-20 mx-auto mb-4">
               <Image
-                src="/monicalogo.png"
+                src="/logo.jpg"
                 alt="HAM 로고"
                 fill
                 className="object-contain"

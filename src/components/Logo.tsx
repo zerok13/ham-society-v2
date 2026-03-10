@@ -32,7 +32,7 @@ export function Logo({ size = "md", showText = false }: LogoProps) {
     <div className="flex items-center gap-3">
       <div className={`${sizeClasses[size]} relative flex-shrink-0`}>
         <Image
-          src="/monicalogo.png"
+          src="/logo.jpg"
           alt="HAM 로고"
           width={imageSizes[size]}
           height={imageSizes[size]}

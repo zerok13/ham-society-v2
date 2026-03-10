@@ -49,7 +49,7 @@ export default function GreetingPage() {
               <div className="flex items-center gap-3 mb-4">
                 <div className="relative w-12 h-12">
                   <Image
-                    src="/monicalogo.png"
+                    src="/logo.jpg"
                     alt="HAM 로고"
                     fill
                     className="object-contain"
