@@ -32,7 +32,7 @@ export default function GreetingPage() {
             <div className="md:w-1/3 bg-gradient-to-br from-[#1a2e5a] to-[#2e5aa7] p-8 flex flex-col items-center justify-center">
               <div className="relative w-40 h-48 rounded-lg overflow-hidden shadow-xl border-4 border-white mb-4">
                 <Image
-                  src="/images/president.jpg"
+                  src="/president.jpg"
                   alt="김형태 회장"
                   fill
                   className="object-cover"
@@ -49,7 +49,7 @@ export default function GreetingPage() {
               <div className="flex items-center gap-3 mb-4">
                 <div className="relative w-12 h-12">
                   <Image
-                    src="/images/logo.jpg"
+                    src="/logo.jpg"
                     alt="HAM 로고"
                     fill
                     className="object-contain"

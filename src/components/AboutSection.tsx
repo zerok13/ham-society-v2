@@ -35,7 +35,7 @@ export function AboutSection() {
           <div className="relative animate-slideInLeft">
             <div className="relative h-80 md:h-96 rounded-xl overflow-hidden shadow-xl bg-[#1a2e5a]">
               <Image
-                src="/images/slide-panel.jpg"
+                src="/slide-panel.jpg"
                 alt="HAM 학술 활동"
                 fill
                 className="object-contain"

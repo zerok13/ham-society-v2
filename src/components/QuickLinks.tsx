@@ -11,7 +11,7 @@ const quickLinks = [
     description: "학술대회 발표 자료 및 초록을 보실 수 있습니다.",
     icon: FileText,
     href: "/resources/presentations",
-    bgImage: "/images/slide-panel.jpg",
+    bgImage: "/slide-panel.jpg",
     color: "from-[#1a2e5a]",
   },
   {
@@ -20,7 +20,7 @@ const quickLinks = [
     description: "AV Access 관련 연구 자료를 보실 수 있습니다.",
     icon: BookOpen,
     href: "/resources/research",
-    bgImage: "/images/slide-av-study.jpg",
+    bgImage: "/slide-av-study.jpg",
     color: "from-[#2e5aa7]",
   },
   {
@@ -29,7 +29,7 @@ const quickLinks = [
     description: "HAM 회원 가입 및 회비 안내입니다.",
     icon: Users,
     href: "/members/join",
-    bgImage: "/images/slide-group-winter.jpg",
+    bgImage: "/slide-group-winter.jpg",
     color: "from-[#1a2e5a]",
   },
   {
@@ -38,7 +38,7 @@ const quickLinks = [
     description: "학술대회 및 연구회 활동 사진을 보실 수 있습니다.",
     icon: FileVideo,
     href: "/gallery",
-    bgImage: "/images/slide-group-suncheon.jpg",
+    bgImage: "/slide-group-suncheon.jpg",
     color: "from-[#2e5aa7]",
   },
 ];

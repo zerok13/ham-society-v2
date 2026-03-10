@@ -62,7 +62,7 @@ export default function IntroductionPage() {
             </div>
             <div className="relative h-80 rounded-xl overflow-hidden bg-[#1a2e5a]">
               <Image
-                src="/images/slide-av-study.jpg"
+                src="/slide-av-study.jpg"
                 alt="HAM 단체 사진"
                 fill
                 className="object-contain"

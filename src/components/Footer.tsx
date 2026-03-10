@@ -41,7 +41,7 @@ export function Footer() {
             <div className="mb-4">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-14 h-14 bg-white rounded-lg p-1 flex-shrink-0">
-                  <img src="/images/logo.jpg" alt="HAM 로고" className="w-full h-full object-contain" />
+                  <img src="/logo.jpg" alt="HAM 로고" className="w-full h-full object-contain" />
                 </div>
                 <div>
                   <p className="font-bold text-lg 2xl:text-[16px] 2xl:font-normal">대한혈관외과학회</p>

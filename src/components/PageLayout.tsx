@@ -8,8 +8,8 @@ import { Footer } from "@/components/Footer";
 
 // 서브 페이지별 배경 이미지 (번갈아 사용)
 const backgroundImages = [
-  "/images/slide-group-winter.jpg",
-  "/images/slide-group-suncheon.jpg",
+  "/slide-group-winter.jpg",
+  "/slide-group-suncheon.jpg",
 ];
 
 interface PageLayoutProps {

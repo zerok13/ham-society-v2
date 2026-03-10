@@ -373,25 +373,25 @@ export const contactInfo = {
 export const galleryImages = [
   {
     id: 1,
-    src: "/images/slide-group-winter.jpg",
+    src: "/slide-group-winter.jpg",
     title: "제9회 학술대회 단체사진",
     date: "2026.01.25",
   },
   {
     id: 2,
-    src: "/images/slide-group-suncheon.jpg",
+    src: "/slide-group-suncheon.jpg",
     title: "제8회 학술대회 단체사진",
     date: "2025.07.05",
   },
   {
     id: 3,
-    src: "/images/slide-panel.jpg",
+    src: "/slide-panel.jpg",
     title: "제9회 학술대회 좌장세션",
     date: "2026.01.25",
   },
   {
     id: 4,
-    src: "/images/slide-av-study.jpg",
+    src: "/slide-av-study.jpg",
     title: "제1회 학술대회",
     date: "2022.09.03",
   },

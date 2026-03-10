@@ -9,7 +9,7 @@ const updates = [
     title: "제9회 학술대회 사전등록 시작",
     date: "2026.01.10",
     summary: "2026년 1월 25일 대구가톨릭대학교에서 개최되는 제9회 학술대회 사전등록이 시작되었습니다.",
-    image: "/images/group-photo-1.jpg",
+    image: "/group-photo-1.jpg",
     category: "학술대회",
   },
   {
@@ -17,7 +17,7 @@ const updates = [
     title: "홈페이지 오픈 안내",
     date: "2026.01.12",
     summary: "대한혈관외과학회 혈액투석길 연구회 공식 홈페이지가 새롭게 오픈되었습니다.",
-    image: "/images/group-photo-2.jpg",
+    image: "/group-photo-2.jpg",
     category: "소식",
   },
   {
@@ -25,7 +25,7 @@ const updates = [
     title: "2025년 연구회 활동 결산",
     date: "2025.12.28",
     summary: "2025년 한 해 동안의 혈액투석길 연구회 주요 활동을 정리하였습니다.",
-    image: "/images/session.jpg",
+    image: "/session.jpg",
     category: "소식",
   },
   {
@@ -33,7 +33,7 @@ const updates = [
     title: "대한혈관외과학회 공식 연구회 승인",
     date: "2025.03.15",
     summary: "혈액투석길 연구회가 대한혈관외과학회의 공식 산하 연구회로 승인받았습니다.",
-    image: "/images/study.jpg",
+    image: "/study.jpg",
     category: "소식",
   },
 ];

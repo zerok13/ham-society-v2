@@ -9,19 +9,19 @@ import { Logo } from "@/components/Logo";
 // HAM 학술대회 슬라이드 이미지
 const bannerImages = [
   {
-    src: "/images/slide-panel.jpg",
+    src: "/slide-panel.jpg",
     alt: "좌장 패널 세션 - 학술대회 토론",
   },
   {
-    src: "/images/slide-av-study.jpg",
+    src: "/slide-av-study.jpg",
     alt: "제1회 AV Access 연구회 단체사진",
   },
   {
-    src: "/images/slide-group-winter.jpg",
+    src: "/slide-group-winter.jpg",
     alt: "혈액투석길 연구회 동계 학술대회 단체사진",
   },
   {
-    src: "/images/slide-group-suncheon.jpg",
+    src: "/slide-group-suncheon.jpg",
     alt: "2023년 순천 학술대회 단체사진",
   },
 ];

@@ -11,10 +11,10 @@ export default function ConferencePage() {
 
   // Choose specific images for certain conferences
   const getPastImage = (id: number) => {
-    if (id === 9) return "/images/slide-group-winter.jpg"; // 제9회
-    if (id === 8) return "/images/slide-group-suncheon.jpg"; // 제8회
-    if (id === 1) return "/images/slide-av-study.jpg"; // 제1회
-    return "/images/slide-group-suncheon.jpg"; // default fallback
+    if (id === 9) return "/slide-group-winter.jpg"; // 제9회
+    if (id === 8) return "/slide-group-suncheon.jpg"; // 제8회
+    if (id === 1) return "/slide-av-study.jpg"; // 제1회
+    return "/slide-group-suncheon.jpg"; // default fallback
   };
   const hasPastImage = (id: number) => id === 9 || id === 8 || id === 1;
 
@@ -37,7 +37,7 @@ export default function ConferencePage() {
                 <div className="grid md:grid-cols-3">
                   <div className="relative h-48 md:h-full">
                     <Image
-                      src="/images/slide-group-winter.jpg"
+                      src="/slide-group-winter.jpg"
                       alt={conference.title}
                       fill
                       className="object-cover opacity-80"
