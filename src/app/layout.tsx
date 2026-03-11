@@ -3,6 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ClientBody from "./ClientBody";
 import Script from "next/script";
+// 👇 헤더와 푸터를 불러오는 코드를 추가했습니다.
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,7 +46,10 @@ export default function RootLayout({
         />
       </head>
       <body suppressHydrationWarning className="antialiased">
+        {/* 👇 화면에 헤더와 푸터를 그려주는 코드를 추가했습니다. */}
+        <Header />
         <ClientBody>{children}</ClientBody>
+        <Footer />
       </body>
     </html>
   );
