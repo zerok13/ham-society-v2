@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
 
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -15,13 +17,9 @@ export default function Header() {
         }
       } catch {}
     };
-
     checkAuth();
-
     window.addEventListener("storage", checkAuth);
-    return () => {
-      window.removeEventListener("storage", checkAuth);
-    };
+    return () => window.removeEventListener("storage", checkAuth);
   }, []);
 
   const handleLogout = () => {
@@ -29,20 +27,53 @@ export default function Header() {
     localStorage.removeItem("ham_admin");
     setIsLoggedIn(false);
     setIsAdmin(false);
+    window.location.href = "/";
   };
 
   return (
-    <header>
-      <h1>Ham Society</h1>
+    <header className="bg-[#1a2b4b] text-white shadow-md">
+      {/* 최상단 유틸리티 메뉴 */}
+      <div className="max-w-7xl mx-auto px-4 h-10 flex justify-end items-center space-x-6 text-sm border-b border-white/10">
+        <Link href="/" className="hover:text-gray-300">HOME</Link>
+        {isLoggedIn ? (
+          <>
+            {isAdmin && <Link href="/admin" className="text-yellow-400 font-bold">관리자</Link>}
+            <button onClick={handleLogout} className="hover:text-gray-300">로그아웃</button>
+          </>
+        ) : (
+          <>
+            <Link href="/register" className="hover:text-gray-300">회원가입</Link>
+            <Link href="/login" className="hover:text-gray-300">로그인</Link>
+          </>
+        )}
+      </div>
 
-      {isLoggedIn ? (
-        <div>
-          {isAdmin && <span>Admin</span>}
-          <button onClick={handleLogout}>Logout</button>
-        </div>
-      ) : (
-        <span>Not logged in</span>
-      )}
+      {/* 메인 로고 및 네비게이션 */}
+      <div className="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
+        {/* 로고 영역 */}
+        <Link href="/" className="flex items-center space-x-3">
+          <Image 
+            src="/logo.jpg" 
+            alt="HAM Logo" 
+            width={60} 
+            height={60} 
+            className="rounded-full bg-white p-1"
+          />
+          <div className="flex flex-col">
+            <span className="text-xs font-light tracking-widest text-gray-300">대한혈관외과학회</span>
+            <span className="text-lg font-bold tracking-tight">혈액투석길 연구회 (HAM)</span>
+          </div>
+        </Link>
+
+        {/* 메인 메뉴 (왼쪽 사진의 메뉴 구성) */}
+        <nav className="hidden md:flex space-x-8 font-medium">
+          <Link href="/about" className="hover:text-blue-300">연구회 소개</Link>
+          <Link href="/notice" className="hover:text-blue-300">공지/소식</Link>
+          <Link href="/conference" className="hover:text-blue-300">학술행사</Link>
+          <Link href="/resources" className="hover:text-blue-300">학술자료</Link>
+          <Link href="/community" className="hover:text-blue-300">회원공간</Link>
+        </nav>
+      </div>
     </header>
   );
 }
