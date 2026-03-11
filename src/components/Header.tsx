@@ -42,7 +42,7 @@ export default function Header() {
           </>
         ) : (
           <>
-            {/* 💡 signup 주소가 200(성공)으로 뜨므로 이 주소를 사용합니다 */}
+            {/* 💡 signup 주소가 200(성공)이므로 이 주소를 사용합니다 */}
             <Link href="/signup" className="hover:text-gray-300">회원가입</Link>
             <Link href="/login" className="hover:text-gray-300">로그인</Link>
           </>
@@ -52,8 +52,9 @@ export default function Header() {
       {/* 메인 로고 및 네비게이션 */}
       <div className="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
         <Link href="/" className="flex items-center space-x-3">
+          {/* 💡 monicalogo.png가 404이므로, 성공(200)으로 뜨는 monicaLogo.png(대문자 확인)로 수정해봅니다 */}
           <Image 
-            src="/monicalogo.png" 
+            src="/monicaLogo.png" 
             alt="HAM Logo" 
             width={60} 
             height={60} 
@@ -65,9 +66,9 @@ export default function Header() {
           </div>
         </Link>
 
-        {/* 💡 에러가 나는 주소들을 기존의 폴더명(notice, conference 등)으로 되돌려봅니다! */}
+        {/* 💡 네트워크 탭에서 성공(200)으로 확인된 주소들로 모두 맞췄습니다! */}
         <nav className="hidden md:flex space-x-8 font-medium">
-          <Link href="/about" className="hover:text-blue-300">연구회 소개</Link>
+          <Link href="/introduction" className="hover:text-blue-300">연구회 소개</Link>
           <Link href="/notice" className="hover:text-blue-300">공지/소식</Link>
           <Link href="/conference" className="hover:text-blue-300">학술행사</Link>
           <Link href="/resources" className="hover:text-blue-300">학술자료</Link>
