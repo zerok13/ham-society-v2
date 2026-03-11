@@ -64,21 +64,11 @@ export default function Header() {
           </div>
         </Link>
 
-        {/* ✅ 폴더 구조(about/introduction, events/schedule 등)를 완벽하게 반영했습니다! */}
         <nav className="hidden md:flex space-x-8 font-medium">
-          {/* introduction은 about 폴더 안에 있습니다 */}
           <Link href="/about/introduction" className="hover:text-blue-300">연구회 소개</Link>
-          
-          {/* 공지사항은 news 폴더 바로 아래에 있습니다 */}
           <Link href="/news" className="hover:text-blue-300">공지/소식</Link>
-          
-          {/* schedule은 events 폴더 안에 있습니다 */}
           <Link href="/events/schedule" className="hover:text-blue-300">학술행사</Link>
-          
-          {/* 학술자료 폴더 */}
           <Link href="/resources" className="hover:text-blue-300">학술자료</Link>
-          
-          {/* 회원공간 폴더 */}
           <Link href="/members" className="hover:text-blue-300">회원공간</Link>
         </nav>
       </div>
