@@ -4,7 +4,7 @@ import "./globals.css";
 import ClientBody from "./ClientBody";
 import Script from "next/script";
 // 👇 헤더와 푸터를 불러오는 코드를 추가했습니다.
-import { Header } from "@/components/Header";
+import  Header  from "@/components/Header";
 import { Footer } from "@/components/Footer";
 
 const geistSans = Geist({
