@@ -32,7 +32,6 @@ export default function Header() {
 
   return (
     <header className="bg-[#1a2b4b] text-white shadow-md">
-      {/* 최상단 유틸리티 메뉴 */}
       <div className="max-w-7xl mx-auto px-4 h-10 flex justify-end items-center space-x-6 text-sm border-b border-white/10">
         <Link href="/" className="hover:text-gray-300">HOME</Link>
         {isLoggedIn ? (
@@ -42,19 +41,17 @@ export default function Header() {
           </>
         ) : (
           <>
-            {/* 💡 signup 주소가 200(성공)이므로 이 주소를 사용합니다 */}
             <Link href="/signup" className="hover:text-gray-300">회원가입</Link>
             <Link href="/login" className="hover:text-gray-300">로그인</Link>
           </>
         )}
       </div>
 
-      {/* 메인 로고 및 네비게이션 */}
       <div className="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
         <Link href="/" className="flex items-center space-x-3">
-          {/* 💡 monicalogo.png가 404이므로, 성공(200)으로 뜨는 monicaLogo.png(대문자 확인)로 수정해봅니다 */}
+          {/* 로고는 실제 파일명인 logo.jpg 로 수정했습니다 */}
           <Image 
-            src="/monicaLogo.png" 
+            src="/logo.jpg" 
             alt="HAM Logo" 
             width={60} 
             height={60} 
@@ -66,13 +63,13 @@ export default function Header() {
           </div>
         </Link>
 
-        {/* 💡 네트워크 탭에서 성공(200)으로 확인된 주소들로 모두 맞췄습니다! */}
+        {/* 💡 폴더 이름(news, events, members)에 맞춰 주소를 수정했습니다! */}
         <nav className="hidden md:flex space-x-8 font-medium">
-          <Link href="/introduction" className="hover:text-blue-300">연구회 소개</Link>
-          <Link href="/notice" className="hover:text-blue-300">공지/소식</Link>
-          <Link href="/conference" className="hover:text-blue-300">학술행사</Link>
+          <Link href="/about" className="hover:text-blue-300">연구회 소개</Link>
+          <Link href="/news" className="hover:text-blue-300">공지/소식</Link>
+          <Link href="/events" className="hover:text-blue-300">학술행사</Link>
           <Link href="/resources" className="hover:text-blue-300">학술자료</Link>
-          <Link href="/community" className="hover:text-blue-300">회원공간</Link>
+          <Link href="/members" className="hover:text-blue-300">회원공간</Link>
         </nav>
       </div>
     </header>
