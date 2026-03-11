@@ -42,7 +42,7 @@ export default function Header() {
           </>
         ) : (
           <>
-            {/* 💡 register -> signup 으로 수정 */}
+            {/* 💡 signup 주소가 200(성공)으로 뜨므로 이 주소를 사용합니다 */}
             <Link href="/signup" className="hover:text-gray-300">회원가입</Link>
             <Link href="/login" className="hover:text-gray-300">로그인</Link>
           </>
@@ -53,7 +53,7 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
         <Link href="/" className="flex items-center space-x-3">
           <Image 
-            src="/logo.jpg" 
+            src="/monicalogo.png" 
             alt="HAM Logo" 
             width={60} 
             height={60} 
@@ -65,13 +65,13 @@ export default function Header() {
           </div>
         </Link>
 
-        {/* 💡 폴더 이름에 맞춰서 링크 주소를 모두 수정했습니다! */}
+        {/* 💡 에러가 나는 주소들을 기존의 폴더명(notice, conference 등)으로 되돌려봅니다! */}
         <nav className="hidden md:flex space-x-8 font-medium">
           <Link href="/about" className="hover:text-blue-300">연구회 소개</Link>
-          <Link href="/news" className="hover:text-blue-300">공지/소식</Link>
-          <Link href="/events" className="hover:text-blue-300">학술행사</Link>
+          <Link href="/notice" className="hover:text-blue-300">공지/소식</Link>
+          <Link href="/conference" className="hover:text-blue-300">학술행사</Link>
           <Link href="/resources" className="hover:text-blue-300">학술자료</Link>
-          <Link href="/members" className="hover:text-blue-300">회원공간</Link>
+          <Link href="/community" className="hover:text-blue-300">회원공간</Link>
         </nav>
       </div>
     </header>
