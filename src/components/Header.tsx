@@ -42,7 +42,6 @@ export default function Header() {
           </>
         ) : (
           <>
-            {/* ✅ 회원가입 경로를 성공한 /signup 으로 수정 */}
             <Link href="/signup" className="hover:text-gray-300">회원가입</Link>
             <Link href="/login" className="hover:text-gray-300">로그인</Link>
           </>
@@ -65,12 +64,21 @@ export default function Header() {
           </div>
         </Link>
 
-        {/* ✅ 네트워크 탭에서 성공(200)이 확인된 진짜 주소들로 모두 교체했습니다! */}
+        {/* ✅ 폴더 구조(about/introduction, events/schedule 등)를 완벽하게 반영했습니다! */}
         <nav className="hidden md:flex space-x-8 font-medium">
-          <Link href="/introduction" className="hover:text-blue-300">연구회 소개</Link>
+          {/* introduction은 about 폴더 안에 있습니다 */}
+          <Link href="/about/introduction" className="hover:text-blue-300">연구회 소개</Link>
+          
+          {/* 공지사항은 news 폴더 바로 아래에 있습니다 */}
           <Link href="/news" className="hover:text-blue-300">공지/소식</Link>
-          <Link href="/schedule" className="hover:text-blue-300">학술행사</Link>
+          
+          {/* schedule은 events 폴더 안에 있습니다 */}
+          <Link href="/events/schedule" className="hover:text-blue-300">학술행사</Link>
+          
+          {/* 학술자료 폴더 */}
           <Link href="/resources" className="hover:text-blue-300">학술자료</Link>
+          
+          {/* 회원공간 폴더 */}
           <Link href="/members" className="hover:text-blue-300">회원공간</Link>
         </nav>
       </div>
