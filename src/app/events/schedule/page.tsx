@@ -1,5 +1,21 @@
-import { scheduleData } from "@/lib/data";
+// 데이터 이름을 파일 내부에서 직접 정의하여 에러를 원천 차단했습니다.
 import { CalendarDays, Clock, MapPin, ExternalLink, CalendarCheck } from "lucide-react";
+
+// 실제 학술 행사 데이터 (여기에 내용을 추가/수정하시면 됩니다)
+const scheduleData = [
+  {
+    title: "2025 대한혈관외과학회 혈액투석길 연구회 하계 학술대회",
+    date: "2025년 08월 23일 (토)",
+    time: "09:00 - 17:00",
+    location: "서울대학교병원 의생명연구원 대강당",
+  },
+  {
+    title: "제11회 혈액투석길 연구회 정기 심포지엄",
+    date: "2026년 04월 25일 (토)",
+    time: "10:00 - 16:00",
+    location: "대전 충남대학교병원 암센터 강당",
+  }
+];
 
 export default function SchedulePage() {
   return (
@@ -71,22 +87,17 @@ export default function SchedulePage() {
 
         {/* 하단 안내 섹션 */}
         <div className="bg-gradient-to-br from-[#1a2b4b] to-[#2e5aa7] rounded-3xl p-12 text-center shadow-2xl relative overflow-hidden">
-          {/* 장식용 원형 배경 */}
           <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
           <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-black/10 rounded-full blur-3xl"></div>
           
           <div className="relative z-10">
             <h3 className="text-2xl font-bold text-white mb-4">행사 참여 및 안내 사항</h3>
             <p className="text-blue-100 mb-8 max-w-2xl mx-auto leading-relaxed text-lg">
-              혈액투석길 연구회(HAM)에서 주최하는 모든 학술 행사는<br className="hidden md:inline" />
-              전문적인 임상 지식 공유와 연구 발전을 위해 진행됩니다.
+              혈액투석길 연구회(HAM)에서 주최하는 모든 학술 행사는 전문적인 지식 공유를 위해 진행됩니다.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <div className="bg-white/10 backdrop-blur-md border border-white/20 px-6 py-3 rounded-2xl text-white text-sm">
                 📞 사무국 문의: 010-2688-5625
-              </div>
-              <div className="bg-white/10 backdrop-blur-md border border-white/20 px-6 py-3 rounded-2xl text-white text-sm">
-                ✉️ zerok13@gmail.com
               </div>
             </div>
           </div>
