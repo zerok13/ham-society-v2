@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { checkCustomRoutes } from "next/dist/lib/load-custom-routes";
 
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -33,7 +32,6 @@ export default function Header() {
 
   return (
     <header className="bg-[#1a2b4b] text-white shadow-md">
-      {/* 최상단 유틸리티 메뉴 */}
       <div className="max-w-7xl mx-auto px-4 h-10 flex justify-end items-center space-x-6 text-sm border-b border-white/10">
         <Link href="/" className="hover:text-gray-300">HOME</Link>
         {isLoggedIn ? (
@@ -48,23 +46,14 @@ export default function Header() {
           </>
         )}
       </div>
-
-      {/* 메인 로고 및 네비게이션 */}
       <div className="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
         <Link href="/" className="flex items-center space-x-3">
-          <Image 
-            src="/logo.jpg" 
-            alt="HAM Logo" 
-            width={60} 
-            height={60} 
-            className="rounded-full bg-white p-1"
-          />
+          <Image src="/logo.jpg" alt="HAM Logo" width={60} height={60} className="rounded-full bg-white p-1" />
           <div className="flex flex-col">
             <span className="text-xs font-light tracking-widest text-gray-300">대한혈관외과학회</span>
             <span className="text-lg font-bold tracking-tight">혈액투석길 연구회 (HAM)</span>
           </div>
         </Link>
-
         <nav className="hidden md:flex space-x-8 font-medium">
           <Link href="/about/introduction" className="hover:text-blue-300">연구회 소개</Link>
           <Link href="/news" className="hover:text-blue-300">공지/소식</Link>
