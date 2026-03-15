@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { checkCustomRoutes } from "next/dist/lib/load-custom-routes";
 
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
