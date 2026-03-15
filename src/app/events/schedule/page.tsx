@@ -1,115 +1,97 @@
-import { PageLayout } from "@/components/PageLayout";
-import { events } from "@/lib/data";
-import Link from "next/link";
-import { Calendar, MapPin, Clock } from "lucide-react";
+import { scheduleData } from "@/lib/data";
+import { CalendarDays, Clock, MapPin, ExternalLink, CalendarCheck } from "lucide-react";
 
 export default function SchedulePage() {
-  const upcomingEvents = events.filter((e) => e.isUpcoming);
-  const pastEvents = events.filter((e) => !e.isUpcoming);
-
   return (
-    <PageLayout title="행사 일정" subtitle="Event Schedule" imageIndex={0}>
-      <div className="max-w-4xl mx-auto">
-        {/* Upcoming Events */}
-        <div className="mb-12">
-          <h2 className="text-xl font-bold text-[#1a2e5a] mb-6 flex items-center gap-2">
-            <span className="w-2 h-2 bg-[#c41e3a] rounded-full animate-pulse" />
-            예정된 행사
-          </h2>
-          <div className="space-y-4">
-            {upcomingEvents.map((event) => (
-              <Link
-                key={event.id}
-                href={`/events/conference/${event.id}`}
-                className="block bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1"
-              >
-                <div className="flex flex-col md:flex-row">
-                  {/* Date Badge */}
-                  <div className="bg-gradient-to-br from-[#1a2e5a] to-[#2e5aa7] p-6 text-white text-center md:w-40 flex-shrink-0">
-                    <p className="text-3xl font-bold">{event.date.split('.')[2]}</p>
-                    <p className="text-sm opacity-80">{event.date.split('.')[0]}.{event.date.split('.')[1]}</p>
-                  </div>
-                  {/* Content */}
-                  <div className="p-6 flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="px-2 py-0.5 bg-[#c41e3a]/10 text-[#c41e3a] text-xs font-medium rounded">
-                        예정
-                      </span>
-                    </div>
-                    <h3 className="text-lg font-bold text-[#1a2e5a] mb-2">
-                      {event.title}
-                    </h3>
-                    <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-                      <div className="flex items-center gap-1">
-                        <MapPin className="w-4 h-4" />
-                        {event.location}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
-                        {event.time}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Past Events */}
-        <div>
-          <h2 className="text-xl font-bold text-[#1a2e5a] mb-6">
-            지난 행사
-          </h2>
-          <div className="space-y-4">
-            {pastEvents.map((event) => (
-              <div
-                key={event.id}
-                className="bg-white rounded-xl shadow-md overflow-hidden opacity-75"
-              >
-                <div className="flex flex-col md:flex-row">
-                  {/* Date Badge */}
-                  <div className="bg-gray-400 p-6 text-white text-center md:w-40 flex-shrink-0">
-                    <p className="text-3xl font-bold">{event.date.split('.')[2]}</p>
-                    <p className="text-sm opacity-80">{event.date.split('.')[0]}.{event.date.split('.')[1]}</p>
-                  </div>
-                  {/* Content */}
-                  <div className="p-6 flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="px-2 py-0.5 bg-gray-100 text-gray-500 text-xs font-medium rounded">
-                        종료
-                      </span>
-                    </div>
-                    <h3 className="text-lg font-bold text-gray-600 mb-2">
-                      {event.title}
-                    </h3>
-                    <div className="flex flex-wrap gap-4 text-sm text-gray-400">
-                      <div className="flex items-center gap-1">
-                        <MapPin className="w-4 h-4" />
-                        {event.location}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
-                        {event.time}
-                      </div>
-                    </div>
-                    <p className="text-gray-500 text-sm mt-2">{event.description}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Calendar Note */}
-        <div className="mt-12 bg-gradient-to-r from-[#1a2e5a] to-[#2e5aa7] rounded-xl p-6 text-center text-white">
-          <Calendar className="w-10 h-10 mx-auto mb-3 opacity-80" />
-          <h3 className="font-bold mb-2">학술대회 참가 안내</h3>
-          <p className="text-white/80 text-sm">
-            학술대회 참가를 원하시는 분은 사전 등록을 해주시기 바랍니다.
-          </p>
+    <div className="min-h-screen bg-gray-50 pt-10 pb-20">
+      {/* 상단 타이틀 영역 */}
+      <div className="bg-[#1a2b4b] text-white py-16 mb-12 shadow-inner">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <h1 className="text-4xl font-bold mb-4 tracking-tight text-white drop-shadow-sm">학술행사 일정</h1>
+          <p className="text-blue-200 text-lg font-light">Academic Events Schedule</p>
         </div>
       </div>
-    </PageLayout>
+
+      <div className="max-w-6xl mx-auto px-4">
+        {/* 주요 행사 안내 카드 */}
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-12 border border-gray-100 ring-1 ring-gray-200">
+          <div className="p-10">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-12 h-12 bg-[#1a2b4b] rounded-xl flex items-center justify-center shadow-lg">
+                <CalendarCheck className="w-7 h-7 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-[#1a2b4b]">주요 학술 행사 일정</h2>
+            </div>
+
+            <div className="space-y-8">
+              {scheduleData.map((item, index) => (
+                <div 
+                  key={index}
+                  className="group relative bg-white border-l-4 border-l-[#c41e3a] p-8 rounded-r-xl shadow-sm hover:shadow-md transition-all duration-300 border-y border-r border-gray-50"
+                >
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="space-y-4">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <span className="bg-blue-50 text-[#1a2b4b] px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase">
+                          Academic Meeting
+                        </span>
+                        <h3 className="text-xl font-bold text-gray-900 group-hover:text-[#1a2b4b] transition-colors leading-tight">
+                          {item.title}
+                        </h3>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-3 gap-x-6 text-sm text-gray-600">
+                        <div className="flex items-center gap-2.5">
+                          <CalendarDays className="w-4 h-4 text-[#c41e3a]" />
+                          <span className="font-medium">{item.date}</span>
+                        </div>
+                        <div className="flex items-center gap-2.5">
+                          <Clock className="w-4 h-4 text-[#c41e3a]" />
+                          <span>{item.time || "세부 일정 추후 공지"}</span>
+                        </div>
+                        <div className="flex items-center gap-2.5">
+                          <MapPin className="w-4 h-4 text-[#c41e3a]" />
+                          <span className="truncate">{item.location}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center shrink-0">
+                      <button className="flex items-center gap-2 bg-[#1a2b4b] text-white px-6 py-3 rounded-full text-sm font-bold hover:bg-[#0f1d3a] transition-all hover:shadow-lg active:scale-95 group-hover:bg-[#c41e3a]">
+                        <ExternalLink className="w-4 h-4" />
+                        사전등록 안내
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* 하단 안내 섹션 */}
+        <div className="bg-gradient-to-br from-[#1a2b4b] to-[#2e5aa7] rounded-3xl p-12 text-center shadow-2xl relative overflow-hidden">
+          {/* 장식용 원형 배경 */}
+          <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-black/10 rounded-full blur-3xl"></div>
+          
+          <div className="relative z-10">
+            <h3 className="text-2xl font-bold text-white mb-4">행사 참여 및 안내 사항</h3>
+            <p className="text-blue-100 mb-8 max-w-2xl mx-auto leading-relaxed text-lg">
+              혈액투석길 연구회(HAM)에서 주최하는 모든 학술 행사는<br className="hidden md:inline" />
+              전문적인 임상 지식 공유와 연구 발전을 위해 진행됩니다.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 px-6 py-3 rounded-2xl text-white text-sm">
+                📞 사무국 문의: 010-2688-5625
+              </div>
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 px-6 py-3 rounded-2xl text-white text-sm">
+                ✉️ zerok13@gmail.com
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
