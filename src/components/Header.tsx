@@ -32,7 +32,6 @@ export default function Header() {
 
   return (
     <header className="bg-[#1a2b4b] text-white shadow-md">
-      {/* 최상단 유틸리티 메뉴 */}
       <div className="max-w-7xl mx-auto px-4 h-10 flex justify-end items-center space-x-6 text-sm border-b border-white/10">
         <Link href="/" className="hover:text-gray-300">HOME</Link>
         {isLoggedIn ? (
@@ -48,37 +47,22 @@ export default function Header() {
         )}
       </div>
 
-      {/* 메인 로고 및 네비게이션 */}
       <div className="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
         <Link href="/" className="flex items-center space-x-3">
-          <Image 
-            src="/logo.jpg" 
-            alt="HAM Logo" 
-            width={60} 
-            height={60} 
-            className="rounded-full bg-white p-1"
-          />
+          <Image src="/logo.jpg" alt="HAM Logo" width={60} height={60} className="rounded-full bg-white p-1" />
           <div className="flex flex-col">
             <span className="text-xs font-light tracking-widest text-gray-300">대한혈관외과학회</span>
             <span className="text-lg font-bold tracking-tight">혈액투석길 연구회 (HAM)</span>
           </div>
         </Link>
 
-        {/* ✅ 실제 폴더 구조에 맞춰 링크 주소를 수정했습니다. */}
+        {/* ✅ 네트워크 탭에서 성공(200)이 확인된 진짜 주소들입니다! */}
         <nav className="hidden md:flex space-x-8 font-medium">
-          {/* introduction은 about 폴더 안에 있습니다 */}
-          <Link href="/about/introduction" className="hover:text-blue-300">연구회 소개</Link>
-          
-          {/* 공지사항은 notice 폴더로 연결합니다 */}
+          <Link href="/introduction" className="hover:text-blue-300">연구회 소개</Link>
           <Link href="/notice" className="hover:text-blue-300">공지/소식</Link>
-          
-          {/* schedule은 events 폴더 안에 있습니다 */}
-          <Link href="/events/schedule" className="hover:text-blue-300">학술행사</Link>
-          
-          {/* 학술자료는 resources 폴더로 연결합니다 */}
+          <Link href="/schedule" className="hover:text-blue-300">학술행사</Link>
+          {/* 💡 아래 두 주소는 404가 뜨므로 폴더 이름을 꼭 확인해야 합니다! */}
           <Link href="/resources" className="hover:text-blue-300">학술자료</Link>
-          
-          {/* 회원공간은 members 폴더로 연결합니다 */}
           <Link href="/members" className="hover:text-blue-300">회원공간</Link>
         </nav>
       </div>
