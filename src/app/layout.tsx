@@ -13,19 +13,18 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
-  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
   title: "대한혈관외과학회 혈액투석길 연구회 (HAM)",
-  description: "대한혈관외과학회 혈액투석길 연구회는 투석 환자의 혈관 접근로에 관한 연구와 임상 경험을 공유하는 학술 단체입니다.",
+  description: "투석 환자의 혈관 접근로에 관한 연구와 임상 경험을 공유하는 학술 단체입니다.",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="ko" className={`${geistSans.variable} ${geistMono.variable}`}>
       <head>
@@ -33,6 +32,7 @@ export default function RootLayout({
         <Script crossOrigin="anonymous" src="//://unpkg.com" />
       </head>
       <body suppressHydrationWarning className="antialiased flex flex-col min-h-screen">
+        {/* 여기서 한 번만 선언합니다! */}
         <Header />
         <ClientBody>
           <main className="flex-1">
