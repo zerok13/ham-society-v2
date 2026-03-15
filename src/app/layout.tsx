@@ -6,6 +6,7 @@ import Script from "next/script";
 import Header from "@/components/Header";
 import { Footer } from "@/components/Footer";
 
+// 폰트 설정에 subsets: ["latin"]을 추가하여 에러를 해결했습니다.
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -13,6 +14,7 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
+  subsets: ["latin"], // 👈 이 부분이 빠져서 에러가 났던 거예요!
 });
 
 export const metadata: Metadata = {
@@ -32,7 +34,7 @@ export default function RootLayout({
         <Script crossOrigin="anonymous" src="//://unpkg.com" />
       </head>
       <body suppressHydrationWarning className="antialiased flex flex-col min-h-screen">
-        {/* 여기서 한 번만 선언합니다! */}
+        {/* 헤더와 푸터는 여기서 딱 한 번만 나옵니다! */}
         <Header />
         <ClientBody>
           <main className="flex-1">
