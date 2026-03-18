@@ -2,7 +2,7 @@ import { aboutInfo } from "@/lib/data";
 import Image from "next/image";
 import { History, User, Target, Award, Stethoscope, Quote, BookOpen, FileSearch, GraduationCap, ClipboardList } from "lucide-react";
 
-// 주요 활동 카테고리 정의
+// 주요 활동 카테고리
 const activityCategories = [
   { icon: BookOpen, title: "학술 활동", items: aboutInfo.activities.academic },
   { icon: FileSearch, title: "연구 활동", items: aboutInfo.activities.research },
@@ -23,7 +23,7 @@ export default function IntroductionPage() {
 
       <div className="max-w-6xl mx-auto px-4">
         
-        {/* 2. 회장 인사말 섹션 (Greeting) */}
+        {/* 2. 회장 인사말 섹션 (김형태 회장님) */}
         <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 mb-16 border border-gray-100 relative overflow-hidden">
           <div className="absolute top-0 right-0 p-8 opacity-5">
             <Quote size={120} className="text-[#1a2b4b]" />
@@ -42,25 +42,32 @@ export default function IntroductionPage() {
                 "투석 환자의 생명선인 혈액투석길,<br /> 그 최선의 길을 위해 함께 정진하겠습니다."
               </h4>
               <div className="text-gray-700 leading-relaxed text-lg space-y-4 whitespace-pre-wrap">
+                {/* 💡 lib/data.ts 의 aboutInfo.purpose 내용을 전문으로 출력합니다. */}
                 {aboutInfo.purpose}
               </div>
               <div className="pt-8 text-right">
                 <p className="text-xl font-bold text-[#1a2b4b]">대한혈관외과학회 혈액투석길 연구회</p>
                 <div className="flex items-center justify-end gap-3 mt-2">
-                  <p className="text-2xl font-black text-gray-900">회장 장 상 철</p>
-                  <div className="w-10 h-10 border-2 border-[#c41e3a] text-[#c41e3a] rounded-full flex items-center justify-center font-bold text-xs">(인)</div>
+                  <p className="text-2xl font-black text-gray-900 underline decoration-[#c41e3a] decoration-4 underline-offset-8">
+                    회장 김 형 태
+                  </p>
+                  <div className="w-12 h-12 border-2 border-[#c41e3a] text-[#c41e3a] rounded-full flex items-center justify-center font-bold text-sm bg-red-50">
+                    (인)
+                  </div>
                 </div>
               </div>
             </div>
             <div className="relative group">
               <div className="relative h-[450px] rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
-                <Image src="/logo.jpg" alt="회장님 사진" fill className="object-cover" />
+                {/* 로고 대신 실제 원장님 사진이 있다면 /president.jpg 등으로 교체하세요 */}
+                <Image src="/logo.jpg" alt="회장 김형태 원장님" fill className="object-cover" />
               </div>
+              <p className="text-center mt-4 text-gray-500 text-sm font-medium">제2대 회장 김형태</p>
             </div>
           </div>
         </div>
 
-        {/* 3. 설립 배경 및 미션 (Mission) */}
+        {/* 3. 설립 배경 및 미션 */}
         <div className="grid md:grid-cols-2 gap-8 mb-16">
           <div className="bg-[#1a2b4b] p-10 rounded-3xl shadow-lg text-white">
             <Target className="w-12 h-12 mb-6 text-blue-300" />
@@ -80,7 +87,7 @@ export default function IntroductionPage() {
           </div>
         </div>
 
-        {/* 4. 주요 활동 (Activities) - 새로 추가됨! */}
+        {/* 4. 주요 활동 (Activities) */}
         <div className="mb-16">
           <div className="flex flex-col items-center mb-10">
             <h3 className="text-3xl font-bold text-[#1a2b4b] mb-2">주요 활동</h3>
@@ -108,23 +115,7 @@ export default function IntroductionPage() {
           </div>
         </div>
 
-        {/* 5. 주요 프로그램 (Programs) - 새로 추가됨! */}
-        <div className="mb-16">
-          <div className="flex flex-col items-center mb-10">
-            <h3 className="text-3xl font-bold text-[#1a2b4b] mb-2">핵심 프로그램</h3>
-            <div className="w-16 h-1 bg-[#c41e3a] rounded-full"></div>
-          </div>
-          <div className="grid md:grid-cols-2 gap-8">
-            {aboutInfo.programs.map((program) => (
-              <div key={program.title} className="bg-gradient-to-br from-[#1a2b4b] to-[#2e5aa7] rounded-3xl p-8 text-white shadow-xl">
-                <h4 className="font-bold text-xl mb-3 border-b border-white/20 pb-3">{program.title}</h4>
-                <p className="text-blue-50 leading-relaxed">{program.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* 6. 주요 연혁 (History Timeline) */}
+        {/* 5. 주요 연혁 (History) */}
         <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 mb-16 border border-gray-100">
           <div className="flex items-center gap-4 mb-12 border-b pb-6">
             <div className="p-3 bg-blue-50 rounded-2xl">
@@ -142,28 +133,18 @@ export default function IntroductionPage() {
                 <p className="text-gray-500 text-sm mt-1">혈관외과 분과 내 전문 학술 연구 단체로 등록 완료</p>
               </div>
             </div>
-            
             <div className="relative">
               <span className="absolute -left-[54px] top-0 w-8 h-8 rounded-full bg-[#1a2b4b] border-4 border-white shadow-md"></span>
               <div className="bg-gray-50 rounded-2xl p-6 shadow-sm">
                 <h4 className="text-xl font-bold text-[#1a2b4b] mb-2">2022. 05</h4>
                 <p className="text-gray-800 font-bold">혈액투석길 연구회 (HAM) 창립총회</p>
-                <p className="text-gray-500 text-sm mt-1">초대 회장 장상철 선출 및 창립 기념 학술대회 개최</p>
-              </div>
-            </div>
-
-            <div className="relative">
-              <span className="absolute -left-[54px] top-0 w-8 h-8 rounded-full bg-gray-200 border-4 border-white shadow-md"></span>
-              <div className="bg-gray-50 rounded-2xl p-6 shadow-sm opacity-80">
-                <h4 className="text-xl font-bold text-gray-400 mb-2">2022 ~ 현재</h4>
-                <p className="text-gray-800">매년 하계 및 동계 정기 학술대회 개최</p>
-                <p className="text-gray-500 text-sm mt-1">혈액투석 접근로 관련 진료 지침 연구 및 회원 교육 진행</p>
+                <p className="text-gray-500 text-sm mt-1">초대 회장 선출 및 창립 기념 학술대회 개최</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* 7. 하단 버튼 */}
+        {/* 6. 하단 버튼 */}
         <div className="text-center">
           <a
             href="/about/executives"
@@ -172,7 +153,6 @@ export default function IntroductionPage() {
             임원진 소개 보기
           </a>
         </div>
-
       </div>
     </div>
   );
