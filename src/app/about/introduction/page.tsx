@@ -28,13 +28,14 @@ export default function IntroductionPage() {
             <h3 className="text-3xl font-bold text-[#1a2b4b]">회장 인사말</h3>
           </div>
           
-          <div className="grid lg:grid-cols-3 gap-12 items-start">
-            <div className="lg:col-span-2 space-y-6">
+          {/* 사진 우측 배치를 위해 flex-row 구조 사용 */}
+          <div className="flex flex-col lg:flex-row gap-12 items-start">
+            {/* 왼쪽: 인사말 텍스트 (비중 확장) */}
+            <div className="flex-1 space-y-6">
               <h4 className="text-2xl font-bold text-gray-800 leading-snug">
                 "투석 환자의 생명선인 혈액투석길,<br /> 그 최선의 길을 위해 함께 정진하겠습니다."
               </h4>
               <div className="text-gray-700 leading-relaxed text-lg space-y-4 whitespace-pre-wrap">
-                {/* 인사말 본문 내용 */}
                 안녕하십니까?
                 {"\n\n"}
                 대한혈관외과학회 혈액투석길 연구회(HAM) 홈페이지를 방문해 주신 여러분을 진심으로 환영합니다.
@@ -49,16 +50,15 @@ export default function IntroductionPage() {
                 <p className="text-xl font-bold text-[#1a2b4b]">대한혈관외과학회 혈액투석길 연구회</p>
                 <div className="flex items-center justify-end gap-3 mt-2">
                   <p className="text-2xl font-black text-gray-900">회장 김형태</p>
-                  {/* (인) 제거 완료 */}
                 </div>
               </div>
             </div>
-            <div className="relative group">
-              <div className="relative h-[450px] rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
-                {/* 회장님 사진 교체 */}
+
+            {/* 오른쪽: 회장님 사진 (너비를 1/4 수준인 w-64로 제한) */}
+            <div className="w-full lg:w-64 flex-shrink-0">
+              <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
                 <Image src="/president.jpg" alt="회장 김형태" fill className="object-cover" />
               </div>
-              {/* 사진 아래 설명 수정 */}
               <p className="text-center mt-4 font-bold text-gray-700 text-lg">회장 김형태</p>
             </div>
           </div>
@@ -111,19 +111,10 @@ export default function IntroductionPage() {
                 <p className="text-gray-500 text-sm mt-1">초대 회장 장상철 선출 및 창립 기념 학술대회 개최</p>
               </div>
             </div>
-
-            <div className="relative">
-              <span className="absolute -left-[54px] top-0 w-8 h-8 rounded-full bg-gray-200 border-4 border-white shadow-md"></span>
-              <div className="bg-gray-50 rounded-2xl p-6 shadow-sm opacity-80">
-                <h4 className="text-xl font-bold text-gray-400 mb-2">2022 ~ 현재</h4>
-                <p className="text-gray-800">매년 하계 및 동계 정기 학술대회 개최</p>
-                <p className="text-gray-500 text-sm mt-1">혈액투석 접근로 관련 진료 지침 연구 및 회원 교육 진행</p>
-              </div>
-            </div>
           </div>
         </div>
 
-        {/* 5. 하단 버튼 (임원진 소개 페이지 이동) */}
+        {/* 5. 하단 버튼 */}
         <div className="text-center">
           <a
             href="/about/executives"
@@ -132,7 +123,6 @@ export default function IntroductionPage() {
             임원진 소개 보기
           </a>
         </div>
-
       </div>
     </div>
   );
