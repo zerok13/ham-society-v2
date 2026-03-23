@@ -2,11 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import Header from "@/components/Header";
-import { Footer } from "@/components/Footer";    
+// Header와 Footer import를 제거합니다. (최상위 layout.tsx에서 이미 제공함)
 
-
-// 서브 페이지별 배경 이미지 (번갈아 사용)
+// 서브 페이지별 배경 이미지
 const backgroundImages = [
   "/slide-group-winter.jpg",
   "/slide-group-suncheon.jpg",
@@ -16,11 +14,10 @@ interface PageLayoutProps {
   children: React.ReactNode;
   title: string;
   subtitle?: string;
-  imageIndex?: number; // 0 or 1 to select image
+  imageIndex?: number;
 }
 
 export function PageLayout({ children, title, subtitle, imageIndex }: PageLayoutProps) {
-  // title의 첫 글자 charCode를 기반으로 이미지 선택 (일관된 결과를 위해)
   const selectedIndex = imageIndex !== undefined
     ? imageIndex
     : title.charCodeAt(0) % 2;
@@ -28,11 +25,10 @@ export function PageLayout({ children, title, subtitle, imageIndex }: PageLayout
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
+      {/* ❌ <Header /> 제거: 중복 방지 */}
 
       {/* Page Header Banner */}
       <div className="relative h-56 md:h-72 overflow-hidden bg-[#1a2e5a]">
-        {/* Background Image with object-contain */}
         <div className="absolute inset-0">
           <Image
             src={backgroundImage}
@@ -42,10 +38,8 @@ export function PageLayout({ children, title, subtitle, imageIndex }: PageLayout
             priority
           />
         </div>
-        {/* Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#1a2e5a]/90 via-[#1a2e5a]/70 to-[#1a2e5a]/50" />
 
-        {/* Content */}
         <div className="relative h-full container mx-auto px-4 flex flex-col justify-center">
           <h1 className="text-white text-3xl md:text-4xl font-bold">{title}</h1>
           {subtitle && (
@@ -66,13 +60,13 @@ export function PageLayout({ children, title, subtitle, imageIndex }: PageLayout
       </div>
 
       {/* Content */}
-      <main className="flex-1 py-12">
+      <main className="flex-1 py-12 bg-white">
         <div className="container mx-auto px-4">
           {children}
         </div>
       </main>
 
-      <Footer />
+      {/* ❌ <Footer /> 제거: 중복 방지 */}
     </div>
   );
 }
