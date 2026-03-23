@@ -396,3 +396,13 @@ export const galleryImages = [
     date: "2022.09.03",
   },
 ];
+export const resources = [
+  {
+    id: 1,
+    title: "혈액투석 관련 학술 발표 자료 01",
+    date: "2026-03-20",
+    category: "발표자료",
+    fileSize: "2.5MB"
+  },
+  // ... 추가 데이터
+];
