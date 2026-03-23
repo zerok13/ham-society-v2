@@ -5,7 +5,7 @@ import { History, User, Target, Award, Stethoscope, Quote } from "lucide-react";
 export default function IntroductionPage() {
   return (
     <div className="min-h-screen bg-gray-50 pb-20 pt-10">
-      {/* 1. 상단 타이틀 영역 (임원진 페이지와 통일) */}
+      {/* 1. 상단 타이틀 영역 */}
       <div className="bg-[#1a2b4b] text-white py-16 mb-12 shadow-md">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <h1 className="text-4xl font-bold mb-4 tracking-tight">연구회 소개</h1>
@@ -34,29 +34,30 @@ export default function IntroductionPage() {
                 "투석 환자의 생명선인 혈액투석길,<br /> 그 최선의 길을 위해 함께 정진하겠습니다."
               </h4>
               <div className="text-gray-700 leading-relaxed text-lg space-y-4 whitespace-pre-wrap">
-                {/* 데이터에 저장된 인사말 전문 노출 */}
                 {aboutInfo.purpose}
               </div>
               <div className="pt-8 text-right">
                 <p className="text-xl font-bold text-[#1a2b4b]">대한혈관외과학회 혈액투석길 연구회</p>
                 <div className="flex items-center justify-end gap-3 mt-2">
-                  <p className="text-2xl font-black text-gray-900">회장 장 상 철</p>
-                  <div className="w-10 h-10 border-2 border-[#c41e3a] text-[#c41e3a] rounded-full flex items-center justify-center font-bold text-xs">
-                    (인)
-                  </div>
+                  {/* 변경: 성함 수정 및 '(인)' 제거 */}
+                  <p className="text-2xl font-black text-gray-900">회장 김형태</p>
                 </div>
               </div>
             </div>
             <div className="relative group">
               <div className="relative h-[450px] rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
-                {/* 실제 사진이 있다면 /president.jpg 등으로 교체 가능합니다 */}
-                <Image src="/logo.jpg" alt="회장님 사진" fill className="object-cover" />
+                {/* 변경: 사진을 /president.jpg로 교체 */}
+                <Image src="/president.jpg" alt="회장 김형태" fill className="object-cover" />
               </div>
+              {/* 변경: 사진 아래 설명을 '회장 김형태'로 수정 */}
+              <p className="text-center mt-4 font-bold text-gray-700">회장 김형태</p>
             </div>
           </div>
         </div>
 
-        {/* 3. 설립 배경 및 비전 (Mission) */}
+        {/* ... (이하 동일한 코드이므로 생략) ... */}
+        
+        {/* 3. 설립 배경 및 비전 */}
         <div className="grid md:grid-cols-2 gap-8 mb-16">
           <div className="bg-[#1a2b4b] p-10 rounded-3xl shadow-lg text-white">
             <Target className="w-12 h-12 mb-6 text-blue-300" />
@@ -76,7 +77,7 @@ export default function IntroductionPage() {
           </div>
         </div>
 
-        {/* 4. 주요 연혁 (History Timeline) */}
+        {/* 4. 주요 연혁 */}
         <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 mb-16 border border-gray-100">
           <div className="flex items-center gap-4 mb-12 border-b pb-6">
             <div className="p-3 bg-blue-50 rounded-2xl">
@@ -103,19 +104,9 @@ export default function IntroductionPage() {
                 <p className="text-gray-500 text-sm mt-1">초대 회장 장상철 선출 및 창립 기념 학술대회 개최</p>
               </div>
             </div>
-
-            <div className="relative">
-              <span className="absolute -left-[54px] top-0 w-8 h-8 rounded-full bg-gray-200 border-4 border-white shadow-md"></span>
-              <div className="bg-gray-50 rounded-2xl p-6 shadow-sm opacity-80">
-                <h4 className="text-xl font-bold text-gray-400 mb-2">2022 ~ 현재</h4>
-                <p className="text-gray-800">매년 하계 및 동계 정기 학술대회 개최</p>
-                <p className="text-gray-500 text-sm mt-1">혈액투석 접근로 관련 진료 지침 연구 및 회원 교육 진행</p>
-              </div>
-            </div>
           </div>
         </div>
 
-        {/* 5. 하단 버튼 */}
         <div className="text-center">
           <a
             href="/about/executives"
@@ -124,7 +115,6 @@ export default function IntroductionPage() {
             임원진 소개 보기
           </a>
         </div>
-
       </div>
     </div>
   );
