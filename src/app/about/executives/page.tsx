@@ -108,7 +108,7 @@ export default function ExecutivesPage() {
             {/* 회장 */}
             <div className="bg-[#c41e3a] text-white w-64 py-6 rounded-2xl text-center shadow-2xl z-10">
               <p className="text-xs font-bold uppercase tracking-widest opacity-80 mb-1">President</p>
-              <p className="text-xl font-black">회장 장상철</p>
+              <p className="text-xl font-black">회장 김형태</p>
             </div>
 
             {/* 연결선 */}
