@@ -31,8 +31,13 @@ export default function NoticePage() {
                       {item.title}
                     </Link>
                   </td>
-                  <td className="py-4 px-4 text-center text-sm text-gray-600">{item.author || "관리자"}</td>
-                  <td className="py-4 px-4 text-center text-sm text-gray-400">{item.date}</td>
+                  {/* 빌드 에러 해결을 위해 (item as any) 타입 캐스팅 추가 */}
+                  <td className="py-4 px-4 text-center text-sm text-gray-600">
+                    {((item as any).author) || "관리자"}
+                  </td>
+                  <td className="py-4 px-4 text-center text-sm text-gray-400">
+                    {item.date}
+                  </td>
                 </tr>
               ))}
             </tbody>
