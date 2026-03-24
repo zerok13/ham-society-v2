@@ -29,17 +29,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <head>
-        <Script crossOrigin="anonymous" src="//://unpkg.com" />
-        <Script crossOrigin="anonymous" src="//://unpkg.com" />
-      </head>
+      <head />
       <body suppressHydrationWarning className="antialiased flex flex-col min-h-screen">
         {/* 헤더와 푸터는 여기서 딱 한 번만 나옵니다! */}
         <Header />
         <ClientBody>
-          <main className="flex-1">
-            {children}
-          </main>
+          {children}
         </ClientBody>
         <Footer />
       </body>

@@ -3,8 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import Header from "@/components/Header";
-import { Footer } from "@/components/Footer";
 import { User, Mail, Lock, Phone, Building, Eye, EyeOff, Check } from "lucide-react";
 
 export default function SignupPage() {
@@ -69,8 +67,6 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Header />
-
       <main className="flex-1 flex items-center justify-center py-12 px-4">
         <div className="w-full max-w-lg">
           {/* Logo */}
@@ -356,8 +352,6 @@ export default function SignupPage() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }
