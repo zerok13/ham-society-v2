@@ -1,8 +1,9 @@
 "use client";
 
 import { PageLayout } from "@/components/PageLayout";
-import { FileSearch, Download, Calendar, BookOpen } from "lucide-react";
-import { useState } from "react";
+import { FileSearch, Download, Calendar, BookOpen, Lock } from "lucide-react";
+import { useState, useEffect } from "react";
+import Link from "next/link";
 
 const allMaterials = [
   {
@@ -59,10 +60,18 @@ const filterTypes = ["전체", "연구논문", "가이드라인", "프로토콜"
 
 export default function ResearchPage() {
   const [activeFilter, setActiveFilter] = useState("전체");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const filteredMaterials = activeFilter === "전체"
-    ? allMaterials
-    : allMaterials.filter((item) => item.type === activeFilter);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsLoggedIn(sessionStorage.getItem("ham_auth") === "1");
+    }
+  }, []);
+
+  const filteredMaterials =
+    activeFilter === "전체"
+      ? allMaterials
+      : allMaterials.filter((item) => item.type === activeFilter);
 
   return (
     <PageLayout title="연구자료실" subtitle="Research Materials" imageIndex={0}>
@@ -86,7 +95,8 @@ export default function ResearchPage() {
                 activeFilter === type
                   ? "bg-[#1a2e5a] text-white"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}>
+              }`}
+            >
               {type}
             </button>
           ))}
@@ -106,12 +116,17 @@ export default function ResearchPage() {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className={`px-2 py-0.5 text-xs rounded ${
-                        item.type === "연구논문" ? "bg-[#1a2e5a]/10 text-[#1a2e5a]" :
-                        item.type === "가이드라인" ? "bg-[#c41e3a]/10 text-[#c41e3a]" :
-                        item.type === "다기관 공동연구" ? "bg-purple-100 text-purple-700" :
-                        "bg-gray-100 text-gray-600"
-                      }`}>
+                      <span
+                        className={`px-2 py-0.5 text-xs rounded ${
+                          item.type === "연구논문"
+                            ? "bg-[#1a2e5a]/10 text-[#1a2e5a]"
+                            : item.type === "가이드라인"
+                            ? "bg-[#c41e3a]/10 text-[#c41e3a]"
+                            : item.type === "다기관 공동연구"
+                            ? "bg-purple-100 text-purple-700"
+                            : "bg-gray-100 text-gray-600"
+                        }`}
+                      >
                         {item.type}
                       </span>
                     </div>
@@ -132,22 +147,50 @@ export default function ResearchPage() {
                     </div>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  className="flex items-center gap-2 px-4 py-2 bg-[#2e5aa7] text-white rounded-lg text-sm font-medium hover:bg-[#1a4a97] transition-colors"
-                >
-                  <Download className="w-4 h-4" />
-                  <span className="hidden sm:inline">다운로드</span>
-                </button>
+
+                {/* 다운로드 버튼 영역 */}
+                <div className="flex-shrink-0">
+                  {!isLoggedIn ? (
+                    <div className="flex items-center gap-2 text-gray-400 text-sm">
+                      <Lock className="w-4 h-4" />
+                      <span>로그인 필요</span>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      className="flex items-center gap-2 px-4 py-2 bg-[#2e5aa7] text-white rounded-lg text-sm font-medium hover:bg-[#1a4a97] transition-colors"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span className="hidden sm:inline">다운로드</span>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Notice */}
-        <div className="mt-8 p-4 bg-gray-50 rounded-lg text-center text-sm text-gray-500">
-          <p>연구자료 다운로드는 회원 로그인 후 가능합니다.</p>
-        </div>
+        {/* 비로그인 안내 배너 */}
+        {!isLoggedIn && (
+          <div className="mt-8 p-6 bg-[#1a2e5a]/5 border border-[#1a2e5a]/20 rounded-xl text-center">
+            <Lock className="w-8 h-8 mx-auto mb-3 text-[#1a2e5a] opacity-50" />
+            <p className="text-gray-600 mb-4">자료 다운로드는 회원 로그인 후 가능합니다.</p>
+            <div className="flex justify-center gap-3">
+              <Link
+                href="/login"
+                className="px-5 py-2 bg-[#1a2e5a] text-white rounded-lg text-sm font-medium hover:bg-[#0f1d3a]"
+              >
+                로그인
+              </Link>
+              <Link
+                href="/signup"
+                className="px-5 py-2 border border-[#1a2e5a] text-[#1a2e5a] rounded-lg text-sm font-medium hover:bg-[#1a2e5a]/5"
+              >
+                회원가입
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
     </PageLayout>
   );
