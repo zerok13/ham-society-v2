@@ -15,7 +15,7 @@ export default function NewFreePostPage() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const loggedIn = localStorage.getItem("ham_auth") === "1";
+      const loggedIn = sessionStorage.getItem("ham_auth") === "1";
       setIsLoggedIn(loggedIn);
       if (!loggedIn) {
         alert("로그인 후 이용 가능합니다.");

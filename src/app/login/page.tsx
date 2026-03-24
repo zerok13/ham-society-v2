@@ -34,9 +34,9 @@ export default function LoginPage() {
       const { user } = await res.json();
 
       // ✅ [핵심 수정] 브라우저에 로그인 정보를 저장하여 Header가 인식하게 합니다.
-      localStorage.setItem("ham_auth", "1");
+      sessionStorage.setItem("ham_auth", "1");
       if (user.role === "admin" || user.email.includes("admin")) {
-        localStorage.setItem("ham_admin", "1");
+        sessionStorage.setItem("ham_admin", "1");
       }
 
       alert(`로그인되었습니다. 환영합니다, ${user.name}님!`);
