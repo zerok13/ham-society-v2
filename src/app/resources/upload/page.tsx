@@ -32,9 +32,9 @@ export default function UploadPage() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setIsLoggedIn(localStorage.getItem("ham_auth") === "1");
+      setIsLoggedIn(sessionStorage.getItem("ham_auth") === "1");
       try {
-        const user = JSON.parse(localStorage.getItem("ham_user") || "{}");
+        const user = JSON.parse(sessionStorage.getItem("ham_user") || "{}");
         setUserName(user.name || "");
         setAuthor(user.name || ""); // Default author to logged in user
       } catch {}

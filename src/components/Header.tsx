@@ -76,8 +76,8 @@ export default function Header() {
     const checkAuth = () => {
       try {
         if (typeof window !== "undefined") {
-          setIsLoggedIn(localStorage.getItem("ham_auth") === "1");
-          setIsAdmin(localStorage.getItem("ham_admin") === "1");
+          setIsLoggedIn(sessionStorage.getItem("ham_auth") === "1");
+          setIsAdmin(sessionStorage.getItem("ham_admin") === "1");
         }
       } catch {}
     };
@@ -87,8 +87,8 @@ export default function Header() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("ham_auth");
-    localStorage.removeItem("ham_admin");
+    sessionStorage.removeItem("ham_auth");
+    sessionStorage.removeItem("ham_admin");
     setIsLoggedIn(false);
     setIsAdmin(false);
     window.location.href = "/";

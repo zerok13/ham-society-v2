@@ -25,7 +25,7 @@ export default function ResourcesPage() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setIsLoggedIn(localStorage.getItem("ham_auth") === "1");
+      setIsLoggedIn(sessionStorage.getItem("ham_auth") === "1");
     }
   }, []);
 

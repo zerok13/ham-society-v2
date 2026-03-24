@@ -48,7 +48,7 @@ export default function MemberBoardPage() {
   useEffect(() => {
     try {
       if (typeof window !== "undefined") {
-        setIsLoggedIn(localStorage.getItem("ham_auth") === "1");
+        setIsLoggedIn(sessionStorage.getItem("ham_auth") === "1");
       }
     } catch {}
   }, []);

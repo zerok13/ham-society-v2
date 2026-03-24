@@ -52,7 +52,7 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    const adminCheck = typeof window !== "undefined" && localStorage.getItem("ham_admin") === "1";
+    const adminCheck = typeof window !== "undefined" && sessionStorage.getItem("ham_admin") === "1";
     setIsAdmin(adminCheck);
     load();
   }, []);
