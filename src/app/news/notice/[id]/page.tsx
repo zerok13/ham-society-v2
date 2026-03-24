@@ -1,6 +1,7 @@
 import { PageLayout } from "@/components/PageLayout";
 import { notices } from "@/lib/data";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, Calendar, Tag } from "lucide-react";
 import { notFound } from "next/navigation";
 
@@ -67,6 +68,18 @@ export default async function NoticeDetailPage({ params }: PageProps) {
 
           {/* Content */}
           <div className="p-6 md:p-8">
+            {notice.image && (
+              <div className="mb-6 rounded-lg overflow-hidden border border-gray-100">
+                <Image
+                  src={notice.image}
+                  alt={notice.title}
+                  width={800}
+                  height={600}
+                  className="w-full h-auto object-contain"
+                  priority
+                />
+              </div>
+            )}
             <div className="prose prose-gray max-w-none">
               <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
                 {notice.content}
