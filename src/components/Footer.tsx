@@ -10,7 +10,7 @@ export function Footer() {
         <div className="border-b border-white/10 pb-6 mb-10 flex flex-wrap items-center gap-x-8 gap-y-2 text-sm">
           <span className="text-white font-bold">관련 사이트:</span>
           <a 
-            href="http://www.vascular.or.kr" 
+            href="https://www.ksvs.org/" 
             target="_blank" 
             rel="noopener noreferrer" 
             className="hover:text-white transition-colors"
