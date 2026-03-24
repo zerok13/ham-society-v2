@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown } from "lucide-react";
 
 // 메뉴 구조 정의
@@ -56,12 +57,20 @@ const navItems = [
 ];
 
 export default function Header() {
+  const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [openMobileMenu, setOpenMobileMenu] = useState<string | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // 페이지 이동 시 모바일 메뉴 닫기
+  useEffect(() => {
+    setIsMobileOpen(false);
+    setOpenMobileMenu(null);
+    setOpenDropdown(null);
+  }, [pathname]);
 
   useEffect(() => {
     const checkAuth = () => {
@@ -77,17 +86,6 @@ export default function Header() {
     return () => window.removeEventListener("storage", checkAuth);
   }, []);
 
-  // 외부 클릭 시 드롭다운 닫기
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setOpenDropdown(null);
-      }
-    };
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
-
   const handleLogout = () => {
     localStorage.removeItem("ham_auth");
     localStorage.removeItem("ham_admin");
@@ -95,6 +93,23 @@ export default function Header() {
     setIsAdmin(false);
     window.location.href = "/";
   };
+
+  // 마우스가 메뉴 영역에 들어올 때 — 딜레이 타이머 취소 후 열기
+  const handleMouseEnter = useCallback((label: string) => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setOpenDropdown(label);
+  }, []);
+
+  // 마우스가 메뉴 영역을 벗어날 때 — 약간의 딜레이 후 닫기 (하위 메뉴로 이동 시 깜빡임 방지)
+  const handleMouseLeave = useCallback(() => {
+    timerRef.current = setTimeout(() => {
+      setOpenDropdown(null);
+    }, 150);
+  }, []);
+
+  // 현재 경로가 해당 메뉴 하위에 속하는지 확인
+  const isActiveMenu = (item: typeof navItems[0]) =>
+    item.children.some((c) => pathname.startsWith(c.href));
 
   return (
     <header className="bg-[#1a2b4b] text-white shadow-md relative z-50">
@@ -115,7 +130,7 @@ export default function Header() {
       </div>
 
       {/* 메인 헤더 */}
-      <div className="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center" ref={dropdownRef}>
+      <div className="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
         {/* 로고 */}
         <Link href="/" className="flex items-center space-x-3">
           <Image
@@ -134,36 +149,55 @@ export default function Header() {
         {/* 데스크탑 네비게이션 */}
         <nav className="hidden md:flex items-center space-x-1 font-medium">
           {navItems.map((item) => (
-            <div key={item.label} className="relative group">
-              <button
-                type="button"
-                className="flex items-center gap-1 px-3 py-2 rounded hover:bg-white/10 hover:text-blue-300 transition-colors"
-                onMouseEnter={() => setOpenDropdown(item.label)}
-                onMouseLeave={() => setOpenDropdown(null)}
-                onClick={() => setOpenDropdown(openDropdown === item.label ? null : item.label)}
+            <div
+              key={item.label}
+              className="relative"
+              onMouseEnter={() => handleMouseEnter(item.label)}
+              onMouseLeave={handleMouseLeave}
+            >
+              {/* 상위 메뉴 — 클릭 시 첫 번째 하위 페이지로 이동, 현재 활성 메뉴는 밑줄 표시 */}
+              <Link
+                href={item.children[0]?.href ?? item.href}
+                className={`flex items-center gap-1 px-3 py-2 rounded transition-colors
+                  ${isActiveMenu(item)
+                    ? "text-blue-300 bg-white/10"
+                    : "hover:bg-white/10 hover:text-blue-300"
+                  }`}
               >
                 {item.label}
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${openDropdown === item.label ? "rotate-180" : ""}`} />
-              </button>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                    openDropdown === item.label ? "rotate-180" : ""
+                  }`}
+                />
+              </Link>
 
-              {/* 드롭다운 메뉴 */}
+              {/* 드롭다운 패널 */}
               <div
-                className={`absolute top-full left-0 mt-1 w-44 bg-white text-gray-800 rounded-lg shadow-xl border border-gray-100 overflow-hidden transition-all duration-200 ${
-                  openDropdown === item.label ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-1 pointer-events-none"
+                className={`absolute top-full left-0 pt-1 w-44 transition-all duration-150 ${
+                  openDropdown === item.label
+                    ? "opacity-100 translate-y-0 pointer-events-auto"
+                    : "opacity-0 -translate-y-1 pointer-events-none"
                 }`}
-                onMouseEnter={() => setOpenDropdown(item.label)}
-                onMouseLeave={() => setOpenDropdown(null)}
+                onMouseEnter={() => handleMouseEnter(item.label)}
+                onMouseLeave={handleMouseLeave}
               >
-                {item.children.map((child) => (
-                  <Link
-                    key={child.href}
-                    href={child.href}
-                    className="block px-4 py-2.5 text-sm hover:bg-[#1a2b4b] hover:text-white transition-colors border-b border-gray-50 last:border-0"
-                    onClick={() => setOpenDropdown(null)}
-                  >
-                    {child.label}
-                  </Link>
-                ))}
+                <div className="bg-white text-gray-800 rounded-lg shadow-xl border border-gray-100 overflow-hidden">
+                  {item.children.map((child) => (
+                    <Link
+                      key={child.href}
+                      href={child.href}
+                      className={`block px-4 py-2.5 text-sm transition-colors border-b border-gray-50 last:border-0
+                        ${pathname === child.href || pathname.startsWith(child.href + "/")
+                          ? "bg-[#1a2b4b] text-white font-semibold"
+                          : "hover:bg-[#1a2b4b] hover:text-white"
+                        }`}
+                      onClick={() => setOpenDropdown(null)}
+                    >
+                      {child.label}
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
           ))}
@@ -187,12 +221,15 @@ export default function Header() {
             <div key={item.label}>
               <button
                 type="button"
-                className="w-full flex items-center justify-between px-6 py-3.5 text-sm font-semibold hover:bg-white/10 transition-colors border-b border-white/5"
+                className={`w-full flex items-center justify-between px-6 py-3.5 text-sm font-semibold transition-colors border-b border-white/5
+                  ${isActiveMenu(item) ? "text-blue-300 bg-white/10" : "hover:bg-white/10"}`}
                 onClick={() => setOpenMobileMenu(openMobileMenu === item.label ? null : item.label)}
               >
                 <span>{item.label}</span>
                 <ChevronDown
-                  className={`w-4 h-4 transition-transform duration-200 ${openMobileMenu === item.label ? "rotate-180" : ""}`}
+                  className={`w-4 h-4 transition-transform duration-200 ${
+                    openMobileMenu === item.label ? "rotate-180" : ""
+                  }`}
                 />
               </button>
               {openMobileMenu === item.label && (
@@ -201,7 +238,11 @@ export default function Header() {
                     <Link
                       key={child.href}
                       href={child.href}
-                      className="block px-10 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors border-b border-white/5 last:border-0"
+                      className={`block px-10 py-3 text-sm transition-colors border-b border-white/5 last:border-0
+                        ${pathname === child.href || pathname.startsWith(child.href + "/")
+                          ? "text-blue-300 font-semibold bg-white/10"
+                          : "text-gray-300 hover:text-white hover:bg-white/10"
+                        }`}
                       onClick={() => {
                         setIsMobileOpen(false);
                         setOpenMobileMenu(null);
