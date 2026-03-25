@@ -50,7 +50,6 @@ const navItems = [
       { label: "회원 게시판", href: "/members/board" },
       { label: "자유게시판", href: "/members/board/free" },
       { label: "증례 토론", href: "/members/board/cases" },
-      { label: "구인/구직", href: "/members/board/jobs" },
       { label: "회원가입 안내", href: "/members/join" },
     ],
   },
