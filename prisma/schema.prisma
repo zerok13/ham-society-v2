@@ -20,6 +20,7 @@ model User {
   createdAt    DateTime  @default(now())
   downloads    Download[]
   posts        BoardPost[]
+  comments     Comment[]
 }
 
 model Presentation {
@@ -53,6 +54,17 @@ model BoardPost {
   authorId    Int
   author      User         @relation(fields: [authorId], references: [id])
   attachments Attachment[]
+  comments    Comment[]
+}
+
+model Comment {
+  id        Int       @id @default(autoincrement())
+  content   String
+  createdAt DateTime  @default(now())
+  postId    Int
+  post      BoardPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  Int
+  author    User      @relation(fields: [authorId], references: [id])
 }
 
 model Attachment {
