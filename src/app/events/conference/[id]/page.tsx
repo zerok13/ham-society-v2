@@ -109,35 +109,132 @@ export default async function ConferenceDetailPage({ params }: PageProps) {
             {event.isUpcoming && event.id === 10 && (
               <div className="mb-8">
                 <h2 className="text-lg font-bold text-[#1a2e5a] mb-4">프로그램</h2>
-                <div className="border rounded-lg overflow-hidden">
-                  <table className="w-full">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-sm font-semibold text-[#1a2e5a]">시간</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold text-[#1a2e5a]">세션</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold text-[#1a2e5a]">주요 내용</th>
+
+                {/* ── 등록 & 개회 ── */}
+                <div className="border rounded-lg overflow-hidden mb-4">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-[#1a2e5a] text-white">
+                        <th className="px-4 py-2.5 text-left w-40">시간</th>
+                        <th className="px-4 py-2.5 text-left">내용</th>
+                        <th className="px-4 py-2.5 text-left w-48">발표자</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y">
-                      <tr>
-                        <td className="px-4 py-3 text-sm text-gray-600">15:00 ~ 15:10</td>
-                        <td className="px-4 py-3 text-sm text-gray-800">개회</td>
-                        <td className="px-4 py-3 text-sm text-gray-800">개회사</td>
+                      <tr className="bg-gray-50">
+                        <td className="px-4 py-2.5 text-gray-500 font-mono">14:50 – 15:00</td>
+                        <td className="px-4 py-2.5 text-gray-800 font-medium">Registration &amp; Opening Remarks</td>
+                        <td className="px-4 py-2.5 text-gray-500">—</td>
                       </tr>
-                      <tr>
-                        <td className="px-4 py-3 text-sm text-gray-600">15:10 ~ 16:30</td>
-                        <td className="px-4 py-3 text-sm text-gray-800">Session 1</td>
-                        <td className="px-4 py-3 text-sm text-gray-800">Latest updates in Vascular Access</td>
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* ── Session 1 ── */}
+                <div className="border rounded-lg overflow-hidden mb-4">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-[#2e5aa7] text-white">
+                        <th colSpan={3} className="px-4 py-2.5 text-left">
+                          Session 1. Discussion of Interesting Cases
+                          <span className="ml-3 font-normal text-blue-100 text-xs">
+                            좌장: 유창현 (유창현외과) · 안문상 (충남대병원)
+                          </span>
+                          <span className="ml-3 font-normal text-blue-200 text-xs">(발표 5분, Discussion 5분)</span>
+                        </th>
                       </tr>
-                      <tr>
-                        <td className="px-4 py-3 text-sm text-gray-600">16:30 ~ 16:50</td>
-                        <td className="px-4 py-3 text-sm text-gray-800">Break</td>
-                        <td className="px-4 py-3 text-sm text-gray-800">Coffee break</td>
+                      <tr className="bg-blue-50">
+                        <th className="px-4 py-2 text-left text-[#1a2e5a] font-semibold w-40">시간</th>
+                        <th className="px-4 py-2 text-left text-[#1a2e5a] font-semibold">발표 제목</th>
+                        <th className="px-4 py-2 text-left text-[#1a2e5a] font-semibold w-48">발표자 (소속)</th>
                       </tr>
-                      <tr>
-                        <td className="px-4 py-3 text-sm text-gray-600">16:50 ~ 18:30</td>
-                        <td className="px-4 py-3 text-sm text-gray-800">Session 2</td>
-                        <td className="px-4 py-3 text-sm text-gray-800">Case discussions & panel</td>
+                    </thead>
+                    <tbody className="divide-y">
+                      {[
+                        ["15:00 – 15:10", "Case 1. 박재영 (베스트)", "박재영 (도담외과)"],
+                        ["15:10 – 15:20", "Case 2. 김동현 (워스트)", "김동현 (해운대도담외과)"],
+                        ["15:20 – 15:30", "Case 3. 김원종 (베스트)", "김원종 (수원도담외과)"],
+                        ["15:30 – 15:40", "Case 4. 문진호 (베스트)", "문진호 (유창현외과)"],
+                        ["15:40 – 15:50", "Case 5. 김형태 (워스트)", "김형태 (브이외과)"],
+                        ["15:50 – 16:00", "Case 6. 변승재 (워스트)", "변승재 (청맥병원)"],
+                        ["16:00 – 16:10", "Case 7. 권준성 (베스트)", "권준성 (춘천성심병원)"],
+                        ["16:10 – 16:20", "Case 8. 김영화 (베스트)", "김영화 (서울선정형외과)"],
+                        ["16:20 – 16:30", "Case 9. 정병훈 (워스트)", "정병훈 (JB외과)"],
+                        ["16:30 – 16:40", "Case 10. 이순천 (워스트)", "이순천 (광양사랑병원)"],
+                      ].map(([time, title, presenter], i) => (
+                        <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                          <td className="px-4 py-2.5 text-gray-500 font-mono">{time}</td>
+                          <td className="px-4 py-2.5 text-gray-800">{title}</td>
+                          <td className="px-4 py-2.5 text-gray-600">{presenter}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* ── Break ── */}
+                <div className="border rounded-lg overflow-hidden mb-4">
+                  <table className="w-full text-sm">
+                    <tbody>
+                      <tr className="bg-amber-50">
+                        <td className="px-4 py-2.5 text-gray-500 font-mono w-40">16:40 – 16:50</td>
+                        <td className="px-4 py-2.5 text-amber-700 font-medium">☕ Break Time</td>
+                        <td className="px-4 py-2.5 w-48" />
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* ── Session 2 ── */}
+                <div className="border rounded-lg overflow-hidden mb-4">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-[#1a4a97] text-white">
+                        <th colSpan={3} className="px-4 py-2.5 text-left">
+                          Session 2. Discussion of Complex Cases
+                          <span className="ml-3 font-normal text-blue-100 text-xs">
+                            좌장: 박제훈 (오른외과) · 이순천 (광양사랑병원)
+                          </span>
+                          <span className="ml-3 font-normal text-blue-200 text-xs">(발표 5분, Discussion 5분)</span>
+                        </th>
+                      </tr>
+                      <tr className="bg-blue-50">
+                        <th className="px-4 py-2 text-left text-[#1a2e5a] font-semibold w-40">시간</th>
+                        <th className="px-4 py-2 text-left text-[#1a2e5a] font-semibold">발표 제목</th>
+                        <th className="px-4 py-2 text-left text-[#1a2e5a] font-semibold w-48">발표자 (소속)</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {[
+                        ["16:50 – 17:00", "Case 1. 김영균 (워스트)", "김영균 (세이브외과)"],
+                        ["17:00 – 17:10", "Case 2. 박제훈 (베스트)", "박제훈 (오른외과)"],
+                        ["17:10 – 17:20", "Case 3. 김대환 (워스트)", "김대환 (나은길외과)"],
+                        ["17:20 – 17:30", "Case 4. 박근명 (워스트)", "박근명 (인천외과)"],
+                        ["17:30 – 17:40", "Case 5. 김현규 (워스트)", "김현규 (이담외과)"],
+                        ["17:40 – 17:50", "Case 6. 김송이 (베스트)", "김송이 (세종충남대병원)"],
+                        ["17:50 – 18:00", "Case 7. 고진 (워스트)", "고진 (고하이외과)"],
+                        ["18:00 – 18:10", "Case 8. 최찬중 (워스트)", "최찬중 (초이스외과)"],
+                        ["18:10 – 18:20", "Case 9. 윤우성 (워스트)", "윤우성 (루백외과)"],
+                        ["18:20 – 18:30", "Case 10. 이재훈 (베스트)", "이재훈 (대구가톨릭대학교 병원)"],
+                      ].map(([time, title, presenter], i) => (
+                        <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                          <td className="px-4 py-2.5 text-gray-500 font-mono">{time}</td>
+                          <td className="px-4 py-2.5 text-gray-800">{title}</td>
+                          <td className="px-4 py-2.5 text-gray-600">{presenter}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* ── 폐회 & 만찬 ── */}
+                <div className="border rounded-lg overflow-hidden">
+                  <table className="w-full text-sm">
+                    <tbody>
+                      <tr className="bg-[#1a2e5a]/5">
+                        <td className="px-4 py-2.5 text-gray-500 font-mono w-40">18:30 –</td>
+                        <td className="px-4 py-2.5 text-[#1a2e5a] font-medium">Closing Remarks &amp; Dinner</td>
+                        <td className="px-4 py-2.5 text-gray-600 w-48">김형태 회장 (브이외과)</td>
                       </tr>
                     </tbody>
                   </table>
