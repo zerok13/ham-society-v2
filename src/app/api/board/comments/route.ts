@@ -2,16 +2,16 @@ import { getPrisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-async function getAuthorId(): Promise<number | null> {
-  const cookieStore = await cookies();
-  const userCookie = cookieStore.get("ham_demo_user");
-  if (!userCookie) return null;
+// 쿠키에서 현재 로그인 사용자 ID를 조회
+// ※ getPrisma()는 싱글턴이므로 disconnect 하지 않음 — 호출 측 finally 에서 처리
+async function getAuthorId(prisma: NonNullable<ReturnType<typeof getPrisma>>): Promise<number | null> {
   try {
+    const cookieStore = await cookies();
+    const userCookie = cookieStore.get("ham_demo_user");
+    if (!userCookie) return null;
     const user = JSON.parse(userCookie.value);
-    const prisma = getPrisma();
-    if (!prisma || !user.email) return null;
+    if (!user.email) return null;
     const dbUser = await prisma.user.findUnique({ where: { email: user.email } });
-    await prisma.$disconnect();
     return dbUser?.id ?? null;
   } catch {
     return null;
@@ -37,7 +37,8 @@ export async function GET(req: Request) {
     });
 
     return NextResponse.json({ comments });
-  } catch {
+  } catch (e) {
+    console.error("[comments GET]", e);
     return NextResponse.json({ ok: false, error: "failed" }, { status: 500 });
   } finally {
     await prisma.$disconnect();
@@ -51,11 +52,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "db not configured" }, { status: 500 });
 
   try {
-    const authorId = await getAuthorId();
+    const authorId = await getAuthorId(prisma);
     if (!authorId)
       return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 403 });
 
-    const { postId, content } = await req.json();
+    const body = await req.json();
+    const { postId, content } = body;
     if (!postId || !content?.trim())
       return NextResponse.json({ ok: false, error: "missing fields" }, { status: 400 });
 
@@ -65,7 +67,8 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ ok: true, comment });
-  } catch {
+  } catch (e) {
+    console.error("[comments POST]", e);
     return NextResponse.json({ ok: false, error: "failed" }, { status: 500 });
   } finally {
     await prisma.$disconnect();
@@ -79,7 +82,7 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ ok: false, error: "db not configured" }, { status: 500 });
 
   try {
-    const authorId = await getAuthorId();
+    const authorId = await getAuthorId(prisma);
     if (!authorId)
       return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 403 });
 
@@ -88,7 +91,6 @@ export async function DELETE(req: Request) {
     if (!id)
       return NextResponse.json({ ok: false, error: "id required" }, { status: 400 });
 
-    // 본인 댓글만 삭제
     const comment = await prisma.comment.findUnique({ where: { id } });
     if (!comment)
       return NextResponse.json({ ok: false, error: "not found" }, { status: 404 });
@@ -97,7 +99,8 @@ export async function DELETE(req: Request) {
 
     await prisma.comment.delete({ where: { id } });
     return NextResponse.json({ ok: true });
-  } catch {
+  } catch (e) {
+    console.error("[comments DELETE]", e);
     return NextResponse.json({ ok: false, error: "failed" }, { status: 500 });
   } finally {
     await prisma.$disconnect();
