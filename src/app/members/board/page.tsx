@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   Lock,
   MessageSquare,
-  Users,
   FileText,
   AlertCircle,
   ChevronRight,
@@ -30,15 +29,6 @@ const boardCategories = [
     posts: 28,
     href: "/members/board/cases",
     color: "from-[#2e5aa7] to-[#4a90c9]",
-  },
-  {
-    id: 3,
-    title: "구인/구직",
-    description: "채용 정보 및 구직 정보를 공유하는 게시판입니다.",
-    icon: Users,
-    posts: 12,
-    href: "/members/board/jobs",
-    color: "from-[#c41e3a] to-[#e04e5e]",
   },
 ];
 
