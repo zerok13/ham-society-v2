@@ -3,6 +3,7 @@
 import { PageLayout } from "@/components/PageLayout";
 import Link from "next/link";
 import { ArrowLeft, Calendar, User } from "lucide-react";
+import CommentSection from "@/components/CommentSection";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
@@ -71,6 +72,11 @@ export default function CaseDetailPage() {
             <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">{post.content}</div>
           </div>
         </article>
+        {/* 댓글 */}
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden mt-6">
+          <CommentSection postId={post.id} />
+        </div>
+
         <div className="flex justify-center mt-6">
           <Link href="/members/board/cases" className="px-6 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm font-medium">목록</Link>
         </div>

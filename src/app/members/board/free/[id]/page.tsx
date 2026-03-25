@@ -3,6 +3,7 @@
 import { PageLayout } from "@/components/PageLayout";
 import Link from "next/link";
 import { ArrowLeft, Calendar, User } from "lucide-react";
+import CommentSection from "@/components/CommentSection";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
@@ -125,6 +126,11 @@ export default function FreeBoardDetailPage() {
             </div>
           )}
         </article>
+
+        {/* 댓글 */}
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden mt-6">
+          <CommentSection postId={post.id} />
+        </div>
 
         {/* 하단 버튼 */}
         <div className="flex justify-center mt-6">
