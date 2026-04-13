@@ -250,7 +250,6 @@ export const executives: Executive[] = [
     position: "회장",
     affiliation: "브이외과",
     role: "연구회 총괄",
-    phone: "010-3338-6346",
     email: "morphus.kht@gmail.com",
   },
   {
@@ -259,7 +258,6 @@ export const executives: Executive[] = [
     position: "총무",
     affiliation: "청맥외과",
     role: "연구회 운영 총괄",
-    phone: "010-8642-2622",
     email: "polarisking@hanmail.net",
   },
   {
@@ -268,7 +266,6 @@ export const executives: Executive[] = [
     position: "회계 감사",
     affiliation: "광양사랑병원",
     role: "회계 및 감사",
-    phone: "010-8605-7692",
     email: "drsclee@hanmail.net",
   },
   {
@@ -277,7 +274,6 @@ export const executives: Executive[] = [
     position: "학술",
     affiliation: "루백외과",
     role: "학술 활동 담당",
-    phone: "010-9685-0618",
     email: "wsyun@me.com",
   },
   {
@@ -286,7 +282,6 @@ export const executives: Executive[] = [
     position: "간사1",
     affiliation: "세이브외과",
     role: "사무국 운영",
-    phone: "010-2688-5625",
     email: "zerok13@gmail.com",
   },
   {
@@ -295,7 +290,6 @@ export const executives: Executive[] = [
     position: "간사2",
     affiliation: "춘천성심병원",
     role: "사무국 지원",
-    phone: "010-9185-6823",
     email: "kahara97@naver.com",
   },
   {
@@ -304,7 +298,6 @@ export const executives: Executive[] = [
     position: "전산 위원",
     affiliation: "고하이외과",
     role: "전산 시스템 관리",
-    phone: "010-5261-5314",
     email: "forgene@naver.com",
   },
   {
@@ -313,7 +306,6 @@ export const executives: Executive[] = [
     position: "간사3",
     affiliation: "대구가톨릭대학교",
     role: "사무국 운영 지원",
-    phone: "010-8927-4464",
     email: "vsljh@cu.ac.kr",
   },
 ];
