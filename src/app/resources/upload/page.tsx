@@ -143,12 +143,18 @@ export default function UploadPage() {
         body: JSON.stringify({ action: "complete", key, uploadId, completedParts }),
       });
       if (!completeRes.ok) throw new Error("업로드 완료 실패");
+      // 응답 복사 (json은 한 번만 읽을 수 있으므로)
+      const completeResClone = completeRes.clone(); // eslint-disable-line
 
-      setUploadedKey(key);
+      // complete 응답에서 localPath 확인
+      const completeData = await completeResClone.json().catch(() => ({}));
+      const localPath = completeData.localPath || "";
+
+      setUploadedKey(localPath || key);
       setStatus("업로드 완료");
       setProgress(100);
 
-      // 메타데이터 저장 (데모)
+      // 메타데이터 저장
       try {
         await fetch("/api/presentations/add", {
           method: "POST",
@@ -158,7 +164,8 @@ export default function UploadPage() {
             author,
             date: selectedEvent?.date || new Date().toISOString().slice(0, 10),
             type,
-            key,
+            key: localPath || key,
+            localPath,
           }),
         });
       } catch {}
