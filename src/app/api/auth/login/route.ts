@@ -19,10 +19,14 @@ export async function POST(req: Request) {
     const match = await bcrypt.compare(password, user.passwordHash);
     if (!match) return NextResponse.json({ ok: false, error: "invalid credentials" }, { status: 401 });
 
+    // 관리자 여부 판별 (email에 admin 포함 또는 memberLevel이 admin)
+    const isAdmin = user.email.includes("admin") || user.memberLevel === "admin";
+
     // JWT/세션 발급 (데모에서는 쿠키로)
-    const res = NextResponse.json({ ok: true, user: { name: user.name, email: user.email, level: user.memberLevel } });
-    res.cookies.set("ham_demo_user", JSON.stringify({ name: user.name, email: user.email }), { httpOnly: false, path: "/" });
+    const res = NextResponse.json({ ok: true, user: { name: user.name, email: user.email, level: user.memberLevel, role: isAdmin ? "admin" : "member" } });
+    res.cookies.set("ham_demo_user", JSON.stringify({ name: user.name, email: user.email, role: isAdmin ? "admin" : "member" }), { httpOnly: false, path: "/" });
     res.cookies.set("ham_auth", "1", { httpOnly: false, path: "/" });
+    if (isAdmin) res.cookies.set("ham_admin", "1", { httpOnly: false, path: "/" });
     return res;
   } catch (e) {
     return NextResponse.json({ ok: false, error: "failed" }, { status: 500 });
