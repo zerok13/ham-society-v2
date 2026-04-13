@@ -22,6 +22,7 @@ export default function ResourcesPage() {
   const [presentations, setPresentations] = useState<Presentation[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("전체");
+  const [downloading, setDownloading] = useState<number | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -36,11 +37,11 @@ export default function ResourcesPage() {
         const res = await fetch("/api/presentations/list");
         if (res.ok) {
           const data = await res.json();
-          setPresentations(data.presentations || []);
+          // items, presentations 두 키 모두 대응
+          setPresentations(data.presentations || data.items || []);
         } else {
-          // DB 없을 때 정적 데이터 fallback
           setPresentations(
-            resources.map((r, i) => ({
+            resources.map((r) => ({
               id: r.id,
               title: r.title,
               author: "HAM",
@@ -72,8 +73,55 @@ export default function ResourcesPage() {
     fetchPresentations();
   }, []);
 
+  // 다운로드 버튼 클릭 핸들러
+  const handleDownload = async (item: Presentation) => {
+    if (!item.key) return;
+    setDownloading(item.id);
+    try {
+      // 로컬 파일 경로(/uploads/...)인 경우 직접 다운로드
+      if (item.key.startsWith("/uploads/") || item.key.startsWith("/public/")) {
+        const a = document.createElement("a");
+        a.href = item.key;
+        a.download = item.key.split("/").pop() || "download";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        return;
+      }
+
+      // R2 또는 서버를 통해 signed URL 획득
+      const res = await fetch(`/api/r2/get-url?key=${encodeURIComponent(item.key)}`);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        alert(err.error === "unauthorized" ? "로그인이 필요합니다." : "다운로드 링크를 가져오지 못했습니다.");
+        return;
+      }
+      const { url } = await res.json();
+      if (!url) {
+        alert("다운로드 링크를 가져오지 못했습니다.");
+        return;
+      }
+
+      // <a> 태그로 강제 다운로드
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = item.key.split("/").pop() || "download";
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (e) {
+      console.error("download error", e);
+      alert("다운로드 중 오류가 발생했습니다.");
+    } finally {
+      setDownloading(null);
+    }
+  };
+
   const filterTypes = ["전체", "학술대회", "가이드라인", "프로토콜", "발표자료"];
-  const filtered = filter === "전체" ? presentations : presentations.filter((p) => p.type === filter);
+  const filtered =
+    filter === "전체" ? presentations : presentations.filter((p) => p.type === filter);
 
   return (
     <div className="max-w-6xl mx-auto py-12 px-4 min-h-[600px]">
@@ -138,8 +186,11 @@ export default function ResourcesPage() {
                   <h3 className="text-lg font-bold text-gray-800">{item.title}</h3>
                   <div className="flex gap-3 mt-1 text-sm text-gray-400">
                     <span>{item.date}</span>
+                    {item.author && <><span>•</span><span>{item.author}</span></>}
                     {item.fileSize && <><span>•</span><span>{item.fileSize}</span></>}
-                    {item.downloads > 0 && <><span>•</span><span>다운로드 {item.downloads}회</span></>}
+                    {item.downloads > 0 && (
+                      <><span>•</span><span>다운로드 {item.downloads}회</span></>
+                    )}
                   </div>
                 </div>
               </div>
@@ -151,15 +202,24 @@ export default function ResourcesPage() {
                     <span>로그인 필요</span>
                   </div>
                 ) : item.key ? (
-                  <a
-                    href={`/api/r2/get-url?key=${encodeURIComponent(item.key)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 bg-[#1a2b4b] text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-[#0f1d3a] transition-colors"
+                  <button
+                    type="button"
+                    onClick={() => handleDownload(item)}
+                    disabled={downloading === item.id}
+                    className="flex items-center gap-2 bg-[#1a2b4b] text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-[#0f1d3a] transition-colors disabled:opacity-50"
                   >
-                    <Download size={16} />
-                    다운로드
-                  </a>
+                    {downloading === item.id ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        준비 중...
+                      </>
+                    ) : (
+                      <>
+                        <Download size={16} />
+                        다운로드
+                      </>
+                    )}
+                  </button>
                 ) : (
                   <span className="text-gray-400 text-sm">파일 준비 중</span>
                 )}
@@ -175,10 +235,16 @@ export default function ResourcesPage() {
           <Lock className="w-8 h-8 mx-auto mb-3 text-[#1a2b4b] opacity-50" />
           <p className="text-gray-600 mb-4">자료 다운로드는 회원 로그인 후 가능합니다.</p>
           <div className="flex justify-center gap-3">
-            <Link href="/login" className="px-5 py-2 bg-[#1a2b4b] text-white rounded-lg text-sm font-medium hover:bg-[#0f1d3a]">
+            <Link
+              href="/login"
+              className="px-5 py-2 bg-[#1a2b4b] text-white rounded-lg text-sm font-medium hover:bg-[#0f1d3a]"
+            >
               로그인
             </Link>
-            <Link href="/signup" className="px-5 py-2 border border-[#1a2b4b] text-[#1a2b4b] rounded-lg text-sm font-medium hover:bg-[#1a2b4b]/5">
+            <Link
+              href="/signup"
+              className="px-5 py-2 border border-[#1a2b4b] text-[#1a2b4b] rounded-lg text-sm font-medium hover:bg-[#1a2b4b]/5"
+            >
               회원가입
             </Link>
           </div>
