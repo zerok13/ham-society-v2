@@ -41,6 +41,7 @@ const navItems = [
     children: [
       { label: "발표자료", href: "/resources/presentations" },
       { label: "연구자료실", href: "/resources/research" },
+      { label: "포토갤러리", href: "/gallery" },
     ],
   },
   {
@@ -51,13 +52,6 @@ const navItems = [
       { label: "자유게시판", href: "/members/board/free" },
       { label: "증례 토론", href: "/members/board/cases" },
       { label: "회원가입 안내", href: "/members/join" },
-    ],
-  },
-  {
-    label: "포토갤러리",
-    href: "/gallery",
-    children: [
-      { label: "포토갤러리", href: "/gallery" },
     ],
   },
 ];
