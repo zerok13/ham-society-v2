@@ -53,6 +53,13 @@ const navItems = [
       { label: "회원가입 안내", href: "/members/join" },
     ],
   },
+  {
+    label: "포토갤러리",
+    href: "/gallery",
+    children: [
+      { label: "포토갤러리", href: "/gallery" },
+    ],
+  },
 ];
 
 export default function Header() {
