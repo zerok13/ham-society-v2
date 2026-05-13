@@ -1,15 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    instrumentationHook: true,
-  },
   typescript: {
     ignoreBuildErrors: false,
   },
   eslint: {
     ignoreDuringBuilds: false,
   },
-  allowedDevOrigins: ["*.preview.same-app.com"],
+  allowedDevOrigins: [
+    "*.preview.same-app.com",
+    "*.sandbox.novita.ai",
+  ],
   images: {
     unoptimized: true,
     domains: [
