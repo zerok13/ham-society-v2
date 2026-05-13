@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
+import Link from "next/link";
 import Image from "next/image";
 import { PageLayout } from "@/components/PageLayout";
 import { galleryImages } from "@/lib/data";
@@ -42,7 +43,6 @@ function formatBytes(bytes: number) {
 
 function formatDate(iso: string) {
   if (!iso) return "";
-  // "2026.01.25" 같은 포맷은 그대로
   if (/^\d{4}\.\d{2}/.test(iso)) return iso;
   try {
     const d = new Date(iso);
@@ -54,11 +54,13 @@ function formatDate(iso: string) {
 
 // ─── 메인 컴포넌트 ────────────────────────────────────────────
 export default function GalleryPage() {
-  const [items, setItems] = useState<GalleryItem[]>(staticItems);
-  const [loading, setLoading] = useState(true);
+  const [authChecked, setAuthChecked] = useState(false); // 인증 확인 완료 여부
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [userName, setUserName] = useState("");
+
+  const [items, setItems] = useState<GalleryItem[]>([]);
+  const [loading, setLoading] = useState(false);
 
   // 라이트박스
   const [lightbox, setLightbox] = useState<{ open: boolean; idx: number }>({ open: false, idx: 0 });
@@ -93,13 +95,14 @@ export default function GalleryPage() {
           }
         }
       } catch {}
+      setAuthChecked(true);
     };
     check();
     window.addEventListener("storage", check);
     return () => window.removeEventListener("storage", check);
   }, []);
 
-  // ── 갤러리 목록 불러오기 ─────────────────────────────────
+  // ── 갤러리 목록 불러오기 (로그인 확인 후에만) ──────────────
   const fetchGallery = useCallback(async () => {
     setLoading(true);
     try {
@@ -108,18 +111,23 @@ export default function GalleryPage() {
         const data = await res.json();
         if (data.ok && Array.isArray(data.items)) {
           setItems([...data.items, ...staticItems]);
+          return;
         }
       }
+      // 401 등 오류 시 정적 데이터만
+      setItems(staticItems);
     } catch {
-      // API 실패 시 정적 데이터만 표시
+      setItems(staticItems);
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchGallery();
-  }, [fetchGallery]);
+    if (authChecked && isLoggedIn) {
+      fetchGallery();
+    }
+  }, [authChecked, isLoggedIn, fetchGallery]);
 
   // ── 키보드 이벤트 (라이트박스) ────────────────────────────
   useEffect(() => {
@@ -171,7 +179,6 @@ export default function GalleryPage() {
       const res = await fetch("/api/gallery", { method: "POST", body: fd });
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || "업로드 실패");
-      // 업로드 성공 → 모달 닫고 목록 갱신
       setUploadOpen(false);
       setUploadFile(null);
       setUploadPreview(null);
@@ -196,7 +203,6 @@ export default function GalleryPage() {
       const res = await fetch(`/api/gallery?id=${encodeURIComponent(item.id)}`, { method: "DELETE" });
       const data = await res.json();
       if (!data.ok) throw new Error(data.error);
-      // 라이트박스 열려 있으면 닫기
       setLightbox({ open: false, idx: 0 });
       await fetchGallery();
     } catch (e: any) {
@@ -213,12 +219,7 @@ export default function GalleryPage() {
       } else {
         const res = await fetch(`/api/r2/get-url?key=gallery/${item.filename}`);
         const data = await res.json();
-        if (data.ok && data.url) {
-          url = data.url;
-        } else {
-          // fallback: 직접 로컬 경로
-          url = item.localPath;
-        }
+        url = data.ok && data.url ? data.url : item.localPath;
       }
       const a = document.createElement("a");
       a.href = url;
@@ -234,6 +235,62 @@ export default function GalleryPage() {
 
   const currentItem = items[lightbox.idx];
 
+  // ════════════════════════════════════════════════════════
+  // 인증 확인 전 → 스피너
+  // ════════════════════════════════════════════════════════
+  if (!authChecked) {
+    return (
+      <PageLayout title="포토갤러리" subtitle="Photo Gallery" imageIndex={0}>
+        <div className="flex justify-center items-center py-32">
+          <div className="w-10 h-10 border-4 border-[#1a2e5a] border-t-transparent rounded-full animate-spin" />
+        </div>
+      </PageLayout>
+    );
+  }
+
+  // ════════════════════════════════════════════════════════
+  // 비로그인 → 잠금 화면
+  // ════════════════════════════════════════════════════════
+  if (!isLoggedIn) {
+    return (
+      <PageLayout title="포토갤러리" subtitle="Photo Gallery" imageIndex={0}>
+        <div className="max-w-md mx-auto text-center py-24 px-4">
+          {/* 자물쇠 아이콘 */}
+          <div className="w-20 h-20 rounded-full bg-[#1a2e5a]/8 flex items-center justify-center mx-auto mb-6">
+            <svg className="w-10 h-10 text-[#1a2e5a]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+
+          <h3 className="text-xl font-bold text-[#1a2e5a] mb-2">로그인이 필요한 페이지입니다</h3>
+          <p className="text-gray-500 text-sm mb-8 leading-relaxed">
+            포토갤러리는 회원 전용 콘텐츠입니다.<br />
+            로그인 후 사진 열람 및 다운로드가 가능합니다.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link
+              href={`/login?redirect=/gallery`}
+              className="px-8 py-3 bg-[#1a2e5a] text-white rounded-lg font-semibold hover:bg-[#243d78] transition-colors text-sm"
+            >
+              로그인하기
+            </Link>
+            <Link
+              href="/members/join"
+              className="px-8 py-3 border border-[#1a2e5a] text-[#1a2e5a] rounded-lg font-semibold hover:bg-[#1a2e5a]/5 transition-colors text-sm"
+            >
+              회원가입 안내
+            </Link>
+          </div>
+        </div>
+      </PageLayout>
+    );
+  }
+
+  // ════════════════════════════════════════════════════════
+  // 로그인 → 갤러리 본문
+  // ════════════════════════════════════════════════════════
   return (
     <PageLayout title="포토갤러리" subtitle="Photo Gallery" imageIndex={0}>
       <div className="max-w-6xl mx-auto">
@@ -243,19 +300,15 @@ export default function GalleryPage() {
             <h2 className="text-2xl font-bold text-[#1a2e5a] mb-1">HAM 활동 사진</h2>
             <p className="text-gray-500 text-sm">학술대회 및 연구회 활동 사진을 확인하세요</p>
           </div>
-          {isLoggedIn ? (
-            <button
-              onClick={() => { setUploadOpen(true); setUploadError(""); }}
-              className="flex items-center gap-2 px-5 py-2.5 bg-[#1a2e5a] text-white rounded-lg hover:bg-[#243d78] transition-colors font-medium shadow text-sm"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-              </svg>
-              사진 업로드
-            </button>
-          ) : (
-            <p className="text-sm text-gray-400 italic">로그인 후 사진을 업로드할 수 있습니다.</p>
-          )}
+          <button
+            onClick={() => { setUploadOpen(true); setUploadError(""); }}
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#1a2e5a] text-white rounded-lg hover:bg-[#243d78] transition-colors font-medium shadow text-sm"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+            사진 업로드
+          </button>
         </div>
 
         {/* ── 갤러리 그리드 ── */}
@@ -285,13 +338,11 @@ export default function GalleryPage() {
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 />
-                {/* 호버 오버레이 */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="absolute bottom-0 left-0 right-0 p-3 text-white transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
                   <p className="font-semibold text-sm leading-tight line-clamp-2">{item.title}</p>
                   <p className="text-xs text-white/70 mt-0.5">{formatDate(item.uploadedAt)}</p>
                 </div>
-                {/* 업로더 배지 */}
                 {!item.id.startsWith("static_") && (
                   <div className="absolute top-2 right-2 bg-blue-600 text-white text-[10px] px-1.5 py-0.5 rounded-full opacity-80">
                     NEW
@@ -315,7 +366,7 @@ export default function GalleryPage() {
           className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-sm"
           onClick={() => setLightbox({ open: false, idx: 0 })}
         >
-          {/* 닫기 버튼 */}
+          {/* 닫기 */}
           <button
             className="absolute top-4 right-4 z-10 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-full p-2 transition-colors"
             onClick={() => setLightbox({ open: false, idx: 0 })}
@@ -325,7 +376,7 @@ export default function GalleryPage() {
             </svg>
           </button>
 
-          {/* 이전 버튼 */}
+          {/* 이전 */}
           <button
             className="absolute left-3 top-1/2 -translate-y-1/2 z-10 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-full p-3 transition-colors"
             onClick={(e) => { e.stopPropagation(); setLightbox((p) => ({ open: true, idx: (p.idx - 1 + items.length) % items.length })); }}
@@ -335,7 +386,7 @@ export default function GalleryPage() {
             </svg>
           </button>
 
-          {/* 다음 버튼 */}
+          {/* 다음 */}
           <button
             className="absolute right-3 top-1/2 -translate-y-1/2 z-10 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-full p-3 transition-colors"
             onClick={(e) => { e.stopPropagation(); setLightbox((p) => ({ open: true, idx: (p.idx + 1) % items.length })); }}
@@ -345,20 +396,17 @@ export default function GalleryPage() {
             </svg>
           </button>
 
-          {/* 이미지 영역 */}
+          {/* 이미지 + 정보 */}
           <div
-            className="relative max-w-5xl max-h-[80vh] w-full mx-16 flex flex-col items-center"
+            className="relative max-w-5xl w-full mx-16 flex flex-col items-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative w-full" style={{ maxHeight: "70vh" }}>
-              <img
-                src={currentItem.localPath}
-                alt={currentItem.title}
-                className="max-h-[70vh] max-w-full mx-auto rounded-lg object-contain shadow-2xl block"
-              />
-            </div>
+            <img
+              src={currentItem.localPath}
+              alt={currentItem.title}
+              className="max-h-[70vh] max-w-full mx-auto rounded-lg object-contain shadow-2xl block"
+            />
 
-            {/* 하단 정보 바 */}
             <div className="w-full mt-4 px-2 flex items-start justify-between gap-4">
               <div className="text-white min-w-0">
                 <p className="font-bold text-lg leading-tight">{currentItem.title}</p>
@@ -371,25 +419,22 @@ export default function GalleryPage() {
                 </p>
               </div>
 
-              {/* 액션 버튼 */}
               <div className="flex gap-2 flex-shrink-0">
                 {/* 다운로드 */}
                 <button
                   onClick={() => handleDownload(currentItem)}
                   className="flex items-center gap-1.5 px-3 py-2 bg-white/15 hover:bg-white/25 text-white rounded-lg transition-colors text-sm font-medium"
-                  title="다운로드"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                   </svg>
                   다운로드
                 </button>
-                {/* 삭제 (로그인 + 관리자 또는 본인) */}
-                {isLoggedIn && (isAdmin || currentItem.uploadedBy === userName) && !currentItem.id.startsWith("static_") && (
+                {/* 삭제 (본인·관리자만) */}
+                {(isAdmin || currentItem.uploadedBy === userName) && !currentItem.id.startsWith("static_") && (
                   <button
                     onClick={() => handleDelete(currentItem)}
                     className="flex items-center gap-1.5 px-3 py-2 bg-red-500/80 hover:bg-red-600 text-white rounded-lg transition-colors text-sm font-medium"
-                    title="삭제"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -400,10 +445,7 @@ export default function GalleryPage() {
               </div>
             </div>
 
-            {/* 페이지 인디케이터 */}
-            <p className="text-white/40 text-xs mt-3">
-              {lightbox.idx + 1} / {items.length}
-            </p>
+            <p className="text-white/40 text-xs mt-3">{lightbox.idx + 1} / {items.length}</p>
           </div>
         </div>
       )}
@@ -420,7 +462,6 @@ export default function GalleryPage() {
             className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* 모달 헤더 */}
             <div className="flex items-center justify-between px-6 py-4 border-b bg-[#1a2e5a]">
               <h3 className="text-white font-bold text-lg">사진 업로드</h3>
               <button
@@ -434,16 +475,14 @@ export default function GalleryPage() {
             </div>
 
             <div className="p-6 space-y-5">
-              {/* 드래그앤드롭 영역 */}
+              {/* 드래그앤드롭 */}
               <div
                 ref={dropRef}
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
                 className={`border-2 border-dashed rounded-xl flex flex-col items-center justify-center p-6 cursor-pointer transition-all min-h-[160px] ${
-                  uploadPreview
-                    ? "border-[#1a2e5a] bg-blue-50"
-                    : "border-gray-300 hover:border-[#1a2e5a] hover:bg-gray-50"
+                  uploadPreview ? "border-[#1a2e5a] bg-blue-50" : "border-gray-300 hover:border-[#1a2e5a] hover:bg-gray-50"
                 }`}
               >
                 {uploadPreview ? (
@@ -470,7 +509,7 @@ export default function GalleryPage() {
                 onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFileSelect(f); }}
               />
 
-              {/* 제목 입력 */}
+              {/* 제목 */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
                   제목 <span className="text-red-500">*</span>
@@ -485,7 +524,7 @@ export default function GalleryPage() {
                 />
               </div>
 
-              {/* 설명 입력 */}
+              {/* 설명 */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">설명 (선택)</label>
                 <textarea
@@ -498,7 +537,7 @@ export default function GalleryPage() {
                 />
               </div>
 
-              {/* 에러 메시지 */}
+              {/* 에러 */}
               {uploadError && (
                 <div className="flex items-center gap-2 text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2.5 text-sm">
                   <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -508,7 +547,7 @@ export default function GalleryPage() {
                 </div>
               )}
 
-              {/* 버튼 영역 */}
+              {/* 버튼 */}
               <div className="flex gap-3 pt-1">
                 <button
                   onClick={() => !uploading && setUploadOpen(false)}

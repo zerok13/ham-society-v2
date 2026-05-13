@@ -35,8 +35,13 @@ async function writeGalleryData(items: GalleryItem[]) {
   await writeFile(DATA_FILE, JSON.stringify(items, null, 2), "utf-8");
 }
 
-// GET: 갤러리 목록 조회
+// GET: 갤러리 목록 조회 (로그인 필요)
 export async function GET() {
+  const cookieStore = await cookies();
+  const userCookie = cookieStore.get("ham_demo_user");
+  if (!userCookie) {
+    return NextResponse.json({ ok: false, error: "로그인이 필요합니다." }, { status: 401 });
+  }
   const items = await readGalleryData();
   return NextResponse.json({ ok: true, items });
 }
