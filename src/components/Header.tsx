@@ -41,6 +41,7 @@ const navItems = [
     children: [
       { label: "발표자료", href: "/resources/presentations" },
       { label: "연구자료실", href: "/resources/research" },
+      { label: "포토갤러리", href: "/gallery" },
     ],
   },
   {
