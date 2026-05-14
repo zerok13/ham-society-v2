@@ -94,14 +94,25 @@ export default function GalleryPage() {
     return () => window.removeEventListener("storage", check);
   }, []);
 
+  // ── 안전한 JSON 파싱 헬퍼 ─────────────────────────────────
+  // res.text()로 먼저 읽고 JSON 파싱 실패 시 null 반환 (non-JSON 응답 방어)
+  const safeJson = async (res: Response): Promise<any | null> => {
+    try {
+      const text = await res.text();
+      return JSON.parse(text);
+    } catch {
+      return null;
+    }
+  };
+
   // ── 갤러리 목록 불러오기 ────────────────────────────────────
   const fetchGallery = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch("/api/gallery");
       if (res.ok) {
-        const data = await res.json();
-        if (data.ok && Array.isArray(data.items)) {
+        const data = await safeJson(res);
+        if (data?.ok && Array.isArray(data.items)) {
           setItems([...data.items, ...staticItems]);
           return;
         }
@@ -154,7 +165,9 @@ export default function GalleryPage() {
       fd.append("title", uploadTitle.trim());
       fd.append("description", uploadDesc.trim());
       const res = await fetch("/api/gallery", { method: "POST", body: fd });
-      const data = await res.json();
+      // res.json() 직접 호출 대신 text()로 먼저 읽어 non-JSON 응답(502, 에러 텍스트 등)도 안전하게 처리
+      const data = await safeJson(res);
+      if (!data) throw new Error(`서버 응답 오류 (${res.status}): 잠시 후 다시 시도해주세요.`);
       if (!data.ok) throw new Error(data.error || "업로드 실패");
       setUploadOpen(false);
       setUploadFile(null);
@@ -186,8 +199,9 @@ export default function GalleryPage() {
     if (!confirm(`"${item.title}" 사진을 삭제하시겠습니까?`)) return;
     try {
       const res = await fetch(`/api/gallery?id=${encodeURIComponent(item.id)}`, { method: "DELETE" });
-      const data = await res.json();
-      if (!data.ok) throw new Error(data.error);
+      const data = await safeJson(res);
+      if (!data) throw new Error(`서버 응답 오류 (${res.status}): 잠시 후 다시 시도해주세요.`);
+      if (!data.ok) throw new Error(data.error || "삭제 실패");
       setLightbox({ open: false, idx: 0 });
       await fetchGallery();
     } catch (e: any) { alert(e.message || "삭제 실패"); }
@@ -202,8 +216,9 @@ export default function GalleryPage() {
         url = item.localPath;
       } else {
         const res = await fetch(`/api/r2/get-url?key=gallery/${item.filename}`);
-        const data = await res.json();
-        url = data.ok && data.url ? data.url : item.localPath;
+        const data = await safeJson(res);
+        // JSON 파싱 실패하거나 URL 없으면 localPath로 폴백
+        url = data?.ok && data.url ? data.url : item.localPath;
       }
       const a = document.createElement("a");
       a.href = url;
