@@ -93,6 +93,13 @@ export const config = {
 
 export async function POST(req: NextRequest) {
   try {
+    // 환경변수 체크 (Netlify 등 배포 환경에서 누락 시 명확한 에러)
+    const svcKey = process.env.SUPABASE_JWT_SERVICE || process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!svcKey) {
+      console.error("[gallery POST] 환경변수 누락: SUPABASE_JWT_SERVICE 또는 SUPABASE_SERVICE_ROLE_KEY 필요");
+      return jsonError("서버 설정 오류: Supabase 키가 설정되지 않았습니다. 관리자에게 문의하세요.", 500);
+    }
+
     // 인증 확인
     const cookieStore = await cookies();
     const userCookie = cookieStore.get("ham_demo_user");
