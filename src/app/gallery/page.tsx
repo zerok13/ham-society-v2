@@ -165,10 +165,14 @@ export default function GalleryPage() {
       fd.append("title", uploadTitle.trim());
       fd.append("description", uploadDesc.trim());
       const res = await fetch("/api/gallery", { method: "POST", body: fd });
-      // res.json() 직접 호출 대신 text()로 먼저 읽어 non-JSON 응답(502, 에러 텍스트 등)도 안전하게 처리
-      const data = await safeJson(res);
-      if (!data) throw new Error(`서버 응답 오류 (${res.status}): 잠시 후 다시 시도해주세요.`);
-      if (!data.ok) throw new Error(data.error || "업로드 실패");
+      // text()로 먼저 읽어 non-JSON 응답도 안전하게 처리
+      const rawText = await res.text();
+      console.log("[gallery upload] status:", res.status, "body:", rawText.slice(0, 300));
+      let data: any;
+      try { data = JSON.parse(rawText); } catch {
+        throw new Error(`서버 응답 오류 (${res.status}): 잠시 후 다시 시도해주세요.\n${rawText.slice(0, 100)}`);
+      }
+      if (!data.ok) throw new Error(data.error || `업로드 실패 (${res.status})`);
       setUploadOpen(false);
       setUploadFile(null);
       setUploadPreview(null);
