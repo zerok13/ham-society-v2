@@ -23,9 +23,16 @@ function jsonError(message: string, status = 500) {
 
 function parseUserCookie(raw: string | undefined): Record<string, string> | null {
   if (!raw) return null;
-  try { return JSON.parse(decodeURIComponent(raw)); } catch {
-    try { return JSON.parse(raw); } catch { return null; }
-  }
+  // 시도 1: URL 디코딩 후 JSON 파싱
+  try { return JSON.parse(decodeURIComponent(raw)); } catch {}
+  // 시도 2: 그대로 JSON 파싱 (이미 디코딩된 경우)
+  try { return JSON.parse(raw); } catch {}
+  // 시도 3: 한 번 더 디코딩 (이중 인코딩 케이스)
+  try { return JSON.parse(decodeURIComponent(decodeURIComponent(raw))); } catch {}
+  // 시도 4: email만 있는 단순 문자열 (구 ham_auth/set 방식)
+  if (raw.includes("@")) return { email: raw, name: raw.split("@")[0], role: "member" };
+  console.error("[parseUserCookie] 파싱 실패, raw:", raw.slice(0, 100));
+  return null;
 }
 
 // ── 타입 ──────────────────────────────────────────────────────────────
@@ -85,8 +92,10 @@ export async function POST(req: NextRequest) {
     // 인증 확인
     const cookieStore = await cookies();
     const userCookie = cookieStore.get("ham_demo_user");
+    console.log("[gallery POST] cookie raw:", userCookie?.value?.slice(0, 80) ?? "NONE");
     if (!userCookie) return jsonError("로그인이 필요합니다.", 401);
     const user = parseUserCookie(userCookie.value);
+    console.log("[gallery POST] parsed user:", JSON.stringify(user)?.slice(0, 80));
     if (!user) return jsonError("인증 정보가 올바르지 않습니다.", 401);
 
     // FormData 파싱

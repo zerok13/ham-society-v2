@@ -25,8 +25,8 @@ export async function POST(req: Request) {
       });
       res.cookies.set(
         "ham_demo_user",
-        JSON.stringify({ name: "관리자", email: ADMIN_EMAIL, role: "admin" }),
-        { httpOnly: false, path: "/" }
+        encodeURIComponent(JSON.stringify({ name: "관리자", email: ADMIN_EMAIL, role: "admin" })),
+        { httpOnly: false, path: "/", sameSite: "lax" }
       );
       res.cookies.set("ham_auth", "1", { httpOnly: false, path: "/" });
       res.cookies.set("ham_admin", "1", { httpOnly: false, path: "/" });
@@ -66,8 +66,8 @@ export async function POST(req: Request) {
     });
     res.cookies.set(
       "ham_demo_user",
-      JSON.stringify({ name: user.name, email: user.email, role: isAdmin ? "admin" : "member" }),
-      { httpOnly: false, path: "/" }
+      encodeURIComponent(JSON.stringify({ name: user.name, email: user.email, role: isAdmin ? "admin" : "member" })),
+      { httpOnly: false, path: "/", sameSite: "lax" }
     );
     res.cookies.set("ham_auth", "1", { httpOnly: false, path: "/" });
     if (isAdmin) res.cookies.set("ham_admin", "1", { httpOnly: false, path: "/" });
