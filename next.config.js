@@ -19,6 +19,7 @@ const nextConfig = {
       "ugc.same-assets.com",
       "same-assets.com",
       "assets.same.dev",
+      "xrvbwnfntfdvarvqpqcq.supabase.co",
     ],
     remotePatterns: [
       {
@@ -50,6 +51,12 @@ const nextConfig = {
         protocol: "https",
         hostname: "assets.same.dev",
         pathname: "/**",
+      },
+      // Supabase Storage (signed URLs)
+      {
+        protocol: "https",
+        hostname: "xrvbwnfntfdvarvqpqcq.supabase.co",
+        pathname: "/storage/v1/object/**",
       },
     ],
   },
