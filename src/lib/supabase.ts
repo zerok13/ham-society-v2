@@ -172,9 +172,44 @@ export async function storageSignedUrl(
   return signedPath.startsWith("http") ? signedPath : `${SUPABASE_URL}/storage/v1${signedPath}`;
 }
 
+// ── Storage: Presigned Upload URL 발급 (클라이언트 직접 업로드용) ────
+// 클라이언트가 Netlify Function을 거치지 않고 Supabase Storage에 직접 PUT
+// → Netlify 10MB 바디 제한 / 타임아웃 문제 완전 우회
+export async function storagePresignUpload(
+  bucket: string,
+  path: string,
+  expiresIn = 3600
+): Promise<{ uploadUrl: string; token: string }> {
+  const res = await fetch(
+    `${SUPABASE_URL}/storage/v1/object/sign/upload/${bucket}/${path}`,
+    {
+      method: "POST",
+      headers: adminHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ expiresIn, upsert: true }),
+    }
+  );
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`Presign upload failed (${res.status}): ${body}`);
+  }
+  const data = await res.json();
+  // 응답: { signedURL: "/storage/v1/object/sign/upload/bucket/path?token=...", token: "..." }
+  const signedPath: string = data.signedURL ?? data.url ?? "";
+  if (!signedPath) throw new Error(`Presign upload response missing signedURL: ${JSON.stringify(data)}`);
+  const uploadUrl = signedPath.startsWith("http")
+    ? signedPath
+    : `${SUPABASE_URL}/storage/v1${signedPath}`;
+  return { uploadUrl, token: data.token ?? "" };
+}
+
 // ── Storage: Public URL (공개 버킷용) ────────────────────────────────
 export function storagePublicUrl(bucket: string, path: string): string {
   return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`;
+}
+
+// ── Storage: URL 노출용 base URL ────────────────────────────────────
+export function getSupabaseUrl(): string {
+  return SUPABASE_URL;
 }
 
 export const GALLERY_BUCKET = "gallery";
