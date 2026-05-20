@@ -159,9 +159,10 @@ export default function GalleryPage() {
   // ── 업로드 진행률 상태 ────────────────────────────────────────
   const [uploadProgress, setUploadProgress] = useState(0); // 0~100
 
-  // ── 업로드 실행 (Presigned PUT URL 직접 업로드) ──────────────
-  // 흐름: ① presign API → ② 브라우저에서 Supabase Storage에 직접 PUT → ③ commit API로 DB 저장
-  // 장점: Netlify Function 10MB 바디 제한 / 타임아웃 문제 완전 우회
+  // ── 업로드 실행 (XMLHttpRequest FormData → /api/gallery) ──────
+  // Supabase presigned upload URL은 Free 플랜 미지원(404)
+  // → XHR FormData로 /api/gallery POST (진행률 추적 가능)
+  // → 서버(Netlify)에서 ArrayBuffer로 Supabase Storage에 직접 PUT
   const handleUpload = async () => {
     if (!uploadFile) return;
     if (!uploadTitle.trim()) { setUploadError("제목을 입력하세요."); return; }
@@ -169,83 +170,43 @@ export default function GalleryPage() {
     setUploadError("");
     setUploadProgress(0);
     try {
-      // ① 파일명/ID 생성
-      const ext = (uploadFile.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
-      const id = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-      const storagePath = `${id}.${ext || "jpg"}`;
+      const fd = new FormData();
+      fd.append("file", uploadFile);
+      fd.append("title", uploadTitle.trim());
+      fd.append("description", uploadDesc.trim());
 
-      console.log("[gallery upload] step1: request presign for", storagePath, uploadFile.size, "bytes");
+      console.log("[gallery upload] XHR POST /api/gallery", uploadFile.name, uploadFile.size, "bytes");
 
-      // ② Presigned Upload URL 발급 (서버에서 service_role 키로 발급)
-      const presignRes = await fetch("/api/gallery/presign", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ storagePath, contentType: uploadFile.type || "image/jpeg" }),
-      });
-      const presignText = await presignRes.text();
-      let presignData: any;
-      try { presignData = JSON.parse(presignText); } catch {
-        throw new Error(`Presign 응답 오류 (${presignRes.status}): ${presignText.slice(0, 100)}`);
-      }
-      if (!presignData.ok) throw new Error(presignData.error || "Presigned URL 발급 실패");
-
-      const { uploadUrl } = presignData;
-      console.log("[gallery upload] step2: PUT to Supabase directly, url:", uploadUrl.slice(0, 80));
-
-      setUploadProgress(10);
-
-      // ③ 브라우저에서 Supabase Storage에 직접 PUT (Netlify 거치지 않음)
-      //    XMLHttpRequest로 진행률 추적
-      await new Promise<void>((resolve, reject) => {
+      // XMLHttpRequest로 진행률 추적하며 업로드
+      const rawText = await new Promise<string>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        xhr.open("PUT", uploadUrl, true);
-        xhr.setRequestHeader("Content-Type", uploadFile.type || "image/jpeg");
-        xhr.setRequestHeader("x-upsert", "true");
+        xhr.open("POST", "/api/gallery", true);
         xhr.upload.onprogress = (e) => {
           if (e.lengthComputable) {
-            const pct = Math.round((e.loaded / e.total) * 80) + 10; // 10~90%
+            const pct = Math.round((e.loaded / e.total) * 90); // 0~90%
             setUploadProgress(pct);
           }
         };
         xhr.onload = () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            setUploadProgress(90);
-            resolve();
-          } else {
-            reject(new Error(`Supabase Storage PUT 실패 (${xhr.status}): ${xhr.responseText.slice(0, 200)}`));
-          }
+          setUploadProgress(95);
+          resolve(xhr.responseText);
         };
-        xhr.onerror = () => reject(new Error("네트워크 오류: Storage 업로드 실패"));
-        xhr.send(uploadFile);
+        xhr.onerror = () => reject(new Error("네트워크 오류: 업로드 실패"));
+        xhr.ontimeout = () => reject(new Error("업로드 시간 초과"));
+        xhr.timeout = 120000; // 2분 타임아웃
+        xhr.send(fd);
       });
 
-      console.log("[gallery upload] step3: storage PUT OK, committing to DB...");
-      setUploadProgress(92);
+      console.log("[gallery upload] response:", rawText.slice(0, 200));
+      setUploadProgress(98);
 
-      // ④ DB 메타데이터 저장 (commit API)
-      const commitRes = await fetch("/api/gallery/commit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id,
-          storagePath,
-          title: uploadTitle.trim(),
-          description: uploadDesc.trim(),
-          originalName: uploadFile.name,
-          fileSize: uploadFile.size,
-          mimeType: uploadFile.type || "image/jpeg",
-        }),
-      });
-      const commitText = await commitRes.text();
-      let commitData: any;
-      try { commitData = JSON.parse(commitText); } catch {
-        throw new Error(`DB 저장 응답 오류 (${commitRes.status}): ${commitText.slice(0, 100)}`);
+      let data: any;
+      try { data = JSON.parse(rawText); } catch {
+        throw new Error(`서버 응답 오류: 잠시 후 다시 시도해주세요.\n${rawText.slice(0, 100)}`);
       }
-      if (!commitData.ok) throw new Error(commitData.error || `DB 저장 실패 (${commitRes.status})`);
+      if (!data.ok) throw new Error(data.error || "업로드 실패");
 
-      console.log("[gallery upload] all done!");
       setUploadProgress(100);
-
       setUploadOpen(false);
       setUploadFile(null);
       setUploadPreview(null);
@@ -659,9 +620,8 @@ export default function GalleryPage() {
                 <div className="space-y-1.5">
                   <div className="flex justify-between text-xs text-gray-500">
                     <span>
-                      {uploadProgress < 10 ? "준비 중..." :
-                       uploadProgress < 90 ? "Supabase에 업로드 중..." :
-                       uploadProgress < 100 ? "DB 저장 중..." : "완료!"}
+                      {uploadProgress < 90 ? "Supabase에 업로드 중..." :
+                       uploadProgress < 100 ? "저장 중..." : "완료!"}
                     </span>
                     <span className="font-semibold text-[#1a2e5a]">{uploadProgress}%</span>
                   </div>
@@ -704,7 +664,7 @@ export default function GalleryPage() {
                   {uploading ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      {uploadProgress < 90 ? `업로드 중... ${uploadProgress}%` : "저장 중..."}
+                      {uploadProgress < 95 ? `업로드 중... ${uploadProgress}%` : "저장 중..."}
                     </>
                   ) : (
                     <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
