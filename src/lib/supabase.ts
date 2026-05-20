@@ -122,7 +122,7 @@ export async function storageUpload(
       }),
       // ArrayBuffer를 직접 body로 전달 — Buffer.from() 없이 메모리 복사 없음
       body: bodyData,
-      // @ts-ignore — duplex 옵션: Node 18+ fetch streaming 필수
+      // @ts-expect-error — duplex 옵션: Node 18+ fetch streaming 필수 (TypeScript DOM 타입에 미포함)
       duplex: "half",
     }
   );
