@@ -3,20 +3,19 @@
   publish = ".next"
 
 [functions]
-  # 대용량 이미지 업로드 지원
-  included_files = ["**"]
+  # Prisma Client는 외부 모듈로 처리 (번들 크기 초과 방지)
+  # included_files = ["**"] 제거 → node_modules 전체 번들링 방지
+  external_node_modules = ["@prisma/client"]
+  included_files = ["node_modules/.prisma/client/**"]
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
 [functions."api/gallery"]
-  # 기존 multipart 업로드 (소형 파일 폴백용) - 30초
   max_duration = 30
 
 [functions."api/gallery/presign"]
-  # Presigned URL 발급 (경량 API) - 15초
   max_duration = 15
 
 [functions."api/gallery/commit"]
-  # DB 저장 + Signed URL 발급 - 30초
   max_duration = 30
