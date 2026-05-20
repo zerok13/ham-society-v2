@@ -112,19 +112,20 @@ export async function storageUpload(
   const bodyData: BodyInit = uint8.buffer as ArrayBuffer;
 
   // PUT with upsert: 파일 이미 존재하면 덮어쓰기 (POST는 중복 시 에러)
+  // duplex: "half" — Node 18+ streaming fetch 필수 옵션, as unknown으로 타입 캐스팅
+  const fetchOptions: RequestInit & { duplex?: string } = {
+    method: "PUT",
+    headers: adminHeaders({
+      "Content-Type": contentType,
+      "x-upsert": "true",   // 중복 파일명 → 덮어쓰기 허용
+    }),
+    // ArrayBuffer를 직접 body로 전달 — Buffer.from() 없이 메모리 복사 없음
+    body: bodyData,
+    duplex: "half",
+  };
   const res = await fetch(
     `${SUPABASE_URL}/storage/v1/object/${bucket}/${path}`,
-    {
-      method: "PUT",
-      headers: adminHeaders({
-        "Content-Type": contentType,
-        "x-upsert": "true",   // 중복 파일명 → 덮어쓰기 허용
-      }),
-      // ArrayBuffer를 직접 body로 전달 — Buffer.from() 없이 메모리 복사 없음
-      body: bodyData,
-      // @ts-ignore — duplex 옵션: Node 18+ fetch streaming 필수
-      duplex: "half",
-    }
+    fetchOptions as RequestInit
   );
   if (!res.ok) {
     const errBody = await res.text();
