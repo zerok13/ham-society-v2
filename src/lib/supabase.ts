@@ -94,23 +94,41 @@ export async function dbSelectOne<T>(
 }
 
 // ── Storage: 파일 업로드 ──────────────────────────────────────────────
+// ✅ Buffer.from() 완전 제거 — ArrayBuffer를 Uint8Array로 직접 전달
+//    이유: Buffer.from(arrayBuffer)는 Netlify Node 20 환경에서 메모리 2배 사용 및
+//    `Buffer as BodyInit` 타입 캐스팅이 undici(Node 내장 fetch)에서 올바르게
+//    처리되지 않아 대용량 파일에서 Function 크래시 발생
 export async function storageUpload(
   bucket: string,
   path: string,
-  body: Buffer,
+  data: ArrayBuffer | Uint8Array,
   contentType: string
 ): Promise<void> {
+  // ArrayBuffer → Uint8Array 변환 (이미 Uint8Array면 그대로 사용)
+  const uint8 = data instanceof Uint8Array ? data : new Uint8Array(data);
+
+  // BodyInit 호환: TypeScript dom 타입에서 Uint8Array가 BodyInit으로 인식 안 될 때
+  // ArrayBuffer.slice()로 복사 없이 동일 메모리의 ArrayBuffer 참조를 넘김
+  const bodyData: BodyInit = uint8.buffer as ArrayBuffer;
+
+  // PUT with upsert: 파일 이미 존재하면 덮어쓰기 (POST는 중복 시 에러)
   const res = await fetch(
     `${SUPABASE_URL}/storage/v1/object/${bucket}/${path}`,
     {
-      method: "POST",
-      headers: adminHeaders({ "Content-Type": contentType }),
-      body: body as unknown as BodyInit,
+      method: "PUT",
+      headers: adminHeaders({
+        "Content-Type": contentType,
+        "x-upsert": "true",   // 중복 파일명 → 덮어쓰기 허용
+      }),
+      // ArrayBuffer를 직접 body로 전달 — Buffer.from() 없이 메모리 복사 없음
+      body: bodyData,
+      // @ts-ignore — duplex 옵션: Node 18+ fetch streaming 필수
+      duplex: "half",
     }
   );
   if (!res.ok) {
-    const body2 = await res.text();
-    throw new Error(`Storage upload failed (${res.status}): ${body2}`);
+    const errBody = await res.text();
+    throw new Error(`Storage upload failed (${res.status}): ${errBody}`);
   }
 }
 
@@ -146,8 +164,17 @@ export async function storageSignedUrl(
     const body = await res.text();
     throw new Error(`Signed URL failed (${res.status}): ${body}`);
   }
-  const data = await res.json();
-  return `${SUPABASE_URL}/storage/v1${data.signedURL}`;
+  const responseData = await res.json();
+  // signedURL 필드 형태: "/storage/v1/object/sign/bucket/path?token=..."
+  const signedPath: string = responseData.signedURL ?? responseData.signedUrl ?? responseData.url ?? "";
+  if (!signedPath) throw new Error(`Signed URL response missing: ${JSON.stringify(responseData)}`);
+  // 절대 URL로 변환 (이미 https:// 로 시작하면 그대로 사용)
+  return signedPath.startsWith("http") ? signedPath : `${SUPABASE_URL}/storage/v1${signedPath}`;
+}
+
+// ── Storage: Public URL (공개 버킷용) ────────────────────────────────
+export function storagePublicUrl(bucket: string, path: string): string {
+  return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`;
 }
 
 export const GALLERY_BUCKET = "gallery";

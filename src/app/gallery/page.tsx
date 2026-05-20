@@ -11,13 +11,16 @@ interface GalleryItem {
   id: string;
   title: string;
   description?: string;
-  filename: string;
-  originalName: string;
+  // DB 컬럼명 (snake_case) — API 응답 그대로 사용
+  storage_path?: string;
+  original_name?: string;
+  uploaded_by?: string;
+  uploaded_at?: string;
+  file_size?: number;
+  mime_type?: string;
+  // 정적 이미지용 별칭 (staticItems 전용)
+  filename?: string;
   localPath: string;
-  uploadedBy: string;
-  uploadedAt: string;
-  fileSize: number;
-  mimeType: string;
 }
 
 const staticItems: GalleryItem[] = galleryImages.map((img) => ({
@@ -25,16 +28,16 @@ const staticItems: GalleryItem[] = galleryImages.map((img) => ({
   title: img.title,
   description: img.date,
   filename: img.src,
-  originalName: img.src.split("/").pop() || img.src,
+  original_name: img.src.split("/").pop() || img.src,
   localPath: img.src,
-  uploadedBy: "관리자",
-  uploadedAt: img.date,
-  fileSize: 0,
-  mimeType: "image/jpeg",
+  uploaded_by: "관리자",
+  uploaded_at: img.date,
+  file_size: 0,
+  mime_type: "image/jpeg",
 }));
 
-function formatBytes(bytes: number) {
-  if (bytes === 0) return "";
+function formatBytes(bytes: number | undefined) {
+  if (!bytes || bytes === 0) return "";
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
@@ -219,14 +222,14 @@ export default function GalleryPage() {
       if (item.id.startsWith("static_")) {
         url = item.localPath;
       } else {
-        const res = await fetch(`/api/r2/get-url?key=gallery/${item.filename}`);
+        const res = await fetch(`/api/r2/get-url?key=gallery/${item.filename || item.storage_path}`);
         const data = await safeJson(res);
         // JSON 파싱 실패하거나 URL 없으면 localPath로 폴백
         url = data?.ok && data.url ? data.url : item.localPath;
       }
       const a = document.createElement("a");
       a.href = url;
-      a.download = item.originalName || item.filename;
+      a.download = item.original_name || item.filename || "photo";
       a.target = "_blank";
       document.body.appendChild(a);
       a.click();
@@ -236,7 +239,7 @@ export default function GalleryPage() {
 
   const currentItem = items[lightbox.idx];
   const canDelete = (item: GalleryItem) =>
-    !item.id.startsWith("static_") && (isAdmin || item.uploadedBy === userName);
+    !item.id.startsWith("static_") && (isAdmin || item.uploaded_by === userName);
 
   // ════ 인증 확인 전 → 스피너 ════
   if (!authChecked) {
@@ -368,7 +371,7 @@ export default function GalleryPage() {
                                 opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0
                                 transition-all duration-300">
                   <p className="font-semibold text-sm leading-tight line-clamp-1">{item.title}</p>
-                  <p className="text-xs text-white/70 mt-0.5">{formatDate(item.uploadedAt)}</p>
+                  <p className="text-xs text-white/70 mt-0.5">{formatDate(item.uploaded_at || "")}</p>
                 </div>
               </div>
             ))}
@@ -441,8 +444,8 @@ export default function GalleryPage() {
                   <p className="text-white/65 text-sm mt-0.5">{currentItem.description}</p>
                 )}
                 <p className="text-white/45 text-xs mt-1">
-                  {formatDate(currentItem.uploadedAt)} · {currentItem.uploadedBy}
-                  {currentItem.fileSize > 0 && ` · ${formatBytes(currentItem.fileSize)}`}
+                  {formatDate(currentItem.uploaded_at || "")} · {currentItem.uploaded_by || ""}
+                  {(currentItem.file_size ?? 0) > 0 && ` · ${formatBytes(currentItem.file_size)}`}
                 </p>
               </div>
 

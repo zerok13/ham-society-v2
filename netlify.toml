@@ -2,9 +2,13 @@
   command = "bunx prisma generate && bun run build"
   publish = ".next"
 
+[functions]
+  # 대용량 이미지 업로드 지원: 타임아웃 60초 + 바디 최대 크기 50MB
+  included_files = ["**"]
+
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-
-
-
+[functions."api/gallery"]
+  # 대용량 파일 업로드를 위한 타임아웃 연장 (기본 10초 → 60초)
+  max_duration = 60
