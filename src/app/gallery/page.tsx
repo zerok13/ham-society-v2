@@ -434,19 +434,37 @@ export default function GalleryPage() {
                                   px-2 py-0.5 rounded-full shadow">NEW</div>
                 )}
 
-                {/* ★ 다운로드 버튼 — 호버 시 카드 우상단 */}
-                <button
-                  onClick={(e) => handleDownload(item, e)}
-                  className="absolute top-2 right-2 z-10 bg-white/90 hover:bg-white text-[#1a2e5a]
-                             rounded-full p-2 shadow-md opacity-0 group-hover:opacity-100
-                             transition-all duration-200 hover:scale-110"
-                  title="다운로드"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5}
-                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
-                </button>
+                {/* ★ 버튼 묶음 — 호버 시 카드 우상단 */}
+                <div className="absolute top-2 right-2 z-10 flex flex-col gap-1.5
+                                opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  {/* 다운로드 버튼 */}
+                  <button
+                    onClick={(e) => handleDownload(item, e)}
+                    className="bg-white/90 hover:bg-white text-[#1a2e5a]
+                               rounded-full p-2 shadow-md transition-all duration-200 hover:scale-110"
+                    title="다운로드"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5}
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                  </button>
+
+                  {/* 삭제 버튼 — 업로드한 본인 or 관리자만 표시 */}
+                  {canDelete(item) && (
+                    <button
+                      onClick={(e) => handleDelete(item, e)}
+                      className="bg-red-500/90 hover:bg-red-600 text-white
+                                 rounded-full p-2 shadow-md transition-all duration-200 hover:scale-110"
+                      title="삭제"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
 
                 {/* 하단 제목 + 날짜 */}
                 <div className="absolute bottom-0 left-0 right-0 p-3 text-white
@@ -463,6 +481,9 @@ export default function GalleryPage() {
         <p className="mt-6 text-center text-gray-400 text-xs">
           총 <strong className="text-gray-500">{items.length}</strong>장 &nbsp;·&nbsp;
           사진 위에 마우스를 올리면 <strong className="text-gray-500">⬇ 다운로드</strong> 버튼이 나타납니다
+          {userName && (
+            <> &nbsp;·&nbsp; 내가 올린 사진은 <strong className="text-red-400">🗑 삭제</strong> 버튼도 나타납니다</>
+          )}
         </p>
       </div>
 
