@@ -11,13 +11,16 @@ interface GalleryItem {
   id: string;
   title: string;
   description?: string;
-  filename: string;
-  originalName: string;
+  // DB 컬럼명 (snake_case) — API 응답 그대로 사용
+  storage_path?: string;
+  original_name?: string;
+  uploaded_by?: string;
+  uploaded_at?: string;
+  file_size?: number;
+  mime_type?: string;
+  // 정적 이미지용 별칭 (staticItems 전용)
+  filename?: string;
   localPath: string;
-  uploadedBy: string;
-  uploadedAt: string;
-  fileSize: number;
-  mimeType: string;
 }
 
 const staticItems: GalleryItem[] = galleryImages.map((img) => ({
@@ -25,16 +28,16 @@ const staticItems: GalleryItem[] = galleryImages.map((img) => ({
   title: img.title,
   description: img.date,
   filename: img.src,
-  originalName: img.src.split("/").pop() || img.src,
+  original_name: img.src.split("/").pop() || img.src,
   localPath: img.src,
-  uploadedBy: "관리자",
-  uploadedAt: img.date,
-  fileSize: 0,
-  mimeType: "image/jpeg",
+  uploaded_by: "관리자",
+  uploaded_at: img.date,
+  file_size: 0,
+  mime_type: "image/jpeg",
 }));
 
-function formatBytes(bytes: number) {
-  if (bytes === 0) return "";
+function formatBytes(bytes: number | undefined) {
+  if (!bytes || bytes === 0) return "";
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
@@ -153,33 +156,105 @@ export default function GalleryPage() {
     reader.readAsDataURL(file);
   };
 
-  // ── 업로드 실행 ──────────────────────────────────────────────
+  // ── 업로드 진행률 상태 ────────────────────────────────────────
+  const [uploadProgress, setUploadProgress] = useState(0); // 0~100
+
+  // ── 업로드 실행 (Presigned PUT URL 직접 업로드) ──────────────
+  // 흐름: ① presign API → ② 브라우저에서 Supabase Storage에 직접 PUT → ③ commit API로 DB 저장
+  // 장점: Netlify Function 10MB 바디 제한 / 타임아웃 문제 완전 우회
   const handleUpload = async () => {
     if (!uploadFile) return;
     if (!uploadTitle.trim()) { setUploadError("제목을 입력하세요."); return; }
     setUploading(true);
     setUploadError("");
+    setUploadProgress(0);
     try {
-      const fd = new FormData();
-      fd.append("file", uploadFile);
-      fd.append("title", uploadTitle.trim());
-      fd.append("description", uploadDesc.trim());
-      const res = await fetch("/api/gallery", { method: "POST", body: fd });
-      // text()로 먼저 읽어 non-JSON 응답도 안전하게 처리
-      const rawText = await res.text();
-      console.log("[gallery upload] status:", res.status, "body:", rawText.slice(0, 300));
-      let data: any;
-      try { data = JSON.parse(rawText); } catch {
-        throw new Error(`서버 응답 오류 (${res.status}): 잠시 후 다시 시도해주세요.\n${rawText.slice(0, 100)}`);
+      // ① 파일명/ID 생성
+      const ext = (uploadFile.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+      const id = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+      const storagePath = `${id}.${ext || "jpg"}`;
+
+      console.log("[gallery upload] step1: request presign for", storagePath, uploadFile.size, "bytes");
+
+      // ② Presigned Upload URL 발급 (서버에서 service_role 키로 발급)
+      const presignRes = await fetch("/api/gallery/presign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ storagePath, contentType: uploadFile.type || "image/jpeg" }),
+      });
+      const presignText = await presignRes.text();
+      let presignData: any;
+      try { presignData = JSON.parse(presignText); } catch {
+        throw new Error(`Presign 응답 오류 (${presignRes.status}): ${presignText.slice(0, 100)}`);
       }
-      if (!data.ok) throw new Error(data.error || `업로드 실패 (${res.status})`);
+      if (!presignData.ok) throw new Error(presignData.error || "Presigned URL 발급 실패");
+
+      const { uploadUrl } = presignData;
+      console.log("[gallery upload] step2: PUT to Supabase directly, url:", uploadUrl.slice(0, 80));
+
+      setUploadProgress(10);
+
+      // ③ 브라우저에서 Supabase Storage에 직접 PUT (Netlify 거치지 않음)
+      //    XMLHttpRequest로 진행률 추적
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("PUT", uploadUrl, true);
+        xhr.setRequestHeader("Content-Type", uploadFile.type || "image/jpeg");
+        xhr.setRequestHeader("x-upsert", "true");
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable) {
+            const pct = Math.round((e.loaded / e.total) * 80) + 10; // 10~90%
+            setUploadProgress(pct);
+          }
+        };
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            setUploadProgress(90);
+            resolve();
+          } else {
+            reject(new Error(`Supabase Storage PUT 실패 (${xhr.status}): ${xhr.responseText.slice(0, 200)}`));
+          }
+        };
+        xhr.onerror = () => reject(new Error("네트워크 오류: Storage 업로드 실패"));
+        xhr.send(uploadFile);
+      });
+
+      console.log("[gallery upload] step3: storage PUT OK, committing to DB...");
+      setUploadProgress(92);
+
+      // ④ DB 메타데이터 저장 (commit API)
+      const commitRes = await fetch("/api/gallery/commit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id,
+          storagePath,
+          title: uploadTitle.trim(),
+          description: uploadDesc.trim(),
+          originalName: uploadFile.name,
+          fileSize: uploadFile.size,
+          mimeType: uploadFile.type || "image/jpeg",
+        }),
+      });
+      const commitText = await commitRes.text();
+      let commitData: any;
+      try { commitData = JSON.parse(commitText); } catch {
+        throw new Error(`DB 저장 응답 오류 (${commitRes.status}): ${commitText.slice(0, 100)}`);
+      }
+      if (!commitData.ok) throw new Error(commitData.error || `DB 저장 실패 (${commitRes.status})`);
+
+      console.log("[gallery upload] all done!");
+      setUploadProgress(100);
+
       setUploadOpen(false);
       setUploadFile(null);
       setUploadPreview(null);
       setUploadTitle("");
       setUploadDesc("");
+      setUploadProgress(0);
       await fetchGallery();
     } catch (e: any) {
+      console.error("[gallery upload] error:", e?.message);
       setUploadError(e.message || "업로드 중 오류가 발생했습니다.");
     } finally {
       setUploading(false);
@@ -212,21 +287,17 @@ export default function GalleryPage() {
   };
 
   // ── 다운로드 ────────────────────────────────────────────────
+  // Supabase 업로드 파일: localPath(signed URL)를 직접 사용
+  // 정적 파일: localPath(public 경로) 직접 사용
+  // R2 API(/api/r2/get-url) 호출 완전 제거 → undefined 키로 NoSuchKey 에러 방지
   const handleDownload = async (item: GalleryItem, e?: React.MouseEvent) => {
     e?.stopPropagation();
     try {
-      let url: string;
-      if (item.id.startsWith("static_")) {
-        url = item.localPath;
-      } else {
-        const res = await fetch(`/api/r2/get-url?key=gallery/${item.filename}`);
-        const data = await safeJson(res);
-        // JSON 파싱 실패하거나 URL 없으면 localPath로 폴백
-        url = data?.ok && data.url ? data.url : item.localPath;
-      }
+      const url = item.localPath;
+      if (!url) { alert("다운로드 URL을 찾을 수 없습니다."); return; }
       const a = document.createElement("a");
       a.href = url;
-      a.download = item.originalName || item.filename;
+      a.download = item.original_name || item.filename || "photo.jpg";
       a.target = "_blank";
       document.body.appendChild(a);
       a.click();
@@ -236,7 +307,7 @@ export default function GalleryPage() {
 
   const currentItem = items[lightbox.idx];
   const canDelete = (item: GalleryItem) =>
-    !item.id.startsWith("static_") && (isAdmin || item.uploadedBy === userName);
+    !item.id.startsWith("static_") && (isAdmin || item.uploaded_by === userName);
 
   // ════ 인증 확인 전 → 스피너 ════
   if (!authChecked) {
@@ -368,7 +439,7 @@ export default function GalleryPage() {
                                 opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0
                                 transition-all duration-300">
                   <p className="font-semibold text-sm leading-tight line-clamp-1">{item.title}</p>
-                  <p className="text-xs text-white/70 mt-0.5">{formatDate(item.uploadedAt)}</p>
+                  <p className="text-xs text-white/70 mt-0.5">{formatDate(item.uploaded_at || "")}</p>
                 </div>
               </div>
             ))}
@@ -441,8 +512,8 @@ export default function GalleryPage() {
                   <p className="text-white/65 text-sm mt-0.5">{currentItem.description}</p>
                 )}
                 <p className="text-white/45 text-xs mt-1">
-                  {formatDate(currentItem.uploadedAt)} · {currentItem.uploadedBy}
-                  {currentItem.fileSize > 0 && ` · ${formatBytes(currentItem.fileSize)}`}
+                  {formatDate(currentItem.uploaded_at || "")} · {currentItem.uploaded_by || ""}
+                  {(currentItem.file_size ?? 0) > 0 && ` · ${formatBytes(currentItem.file_size)}`}
                 </p>
               </div>
 
@@ -571,6 +642,26 @@ export default function GalleryPage() {
                 />
               </div>
 
+              {/* 업로드 진행률 바 */}
+              {uploading && uploadProgress > 0 && (
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-xs text-gray-500">
+                    <span>
+                      {uploadProgress < 10 ? "준비 중..." :
+                       uploadProgress < 90 ? "Supabase에 업로드 중..." :
+                       uploadProgress < 100 ? "DB 저장 중..." : "완료!"}
+                    </span>
+                    <span className="font-semibold text-[#1a2e5a]">{uploadProgress}%</span>
+                  </div>
+                  <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-[#1a2e5a] rounded-full transition-all duration-300"
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* 에러 */}
               {uploadError && (
                 <div className="flex items-center gap-2 text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2.5 text-sm">
@@ -599,7 +690,10 @@ export default function GalleryPage() {
                              flex items-center justify-center gap-2 active:scale-95"
                 >
                   {uploading ? (
-                    <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />업로드 중...</>
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      {uploadProgress < 90 ? `업로드 중... ${uploadProgress}%` : "저장 중..."}
+                    </>
                   ) : (
                     <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5}

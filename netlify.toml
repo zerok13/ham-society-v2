@@ -2,9 +2,21 @@
   command = "bunx prisma generate && bun run build"
   publish = ".next"
 
+[functions]
+  # 대용량 이미지 업로드 지원
+  included_files = ["**"]
+
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
+[functions."api/gallery"]
+  # 기존 multipart 업로드 (소형 파일 폴백용) - 30초
+  max_duration = 30
 
+[functions."api/gallery/presign"]
+  # Presigned URL 발급 (경량 API) - 15초
+  max_duration = 15
 
-
+[functions."api/gallery/commit"]
+  # DB 저장 + Signed URL 발급 - 30초
+  max_duration = 30

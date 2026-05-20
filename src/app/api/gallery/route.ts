@@ -75,13 +75,17 @@ export async function GET() {
     );
 
     return NextResponse.json({ ok: true, items });
-  } catch (e: any) {
-    console.error("[gallery GET]", e);
-    return jsonError(e?.message || "목록 조회 실패", 500);
+  } catch (e: unknown) {
+    const err = e as Error;
+    console.error("[gallery GET]", err);
+    return jsonError(err?.message || "목록 조회 실패", 500);
   }
 }
 
 // ── POST: 사진 업로드 ────────────────────────────────────────────────
+// ✅ 핵심 수정: Buffer.from(arrayBuffer) 완전 제거
+//    → file.arrayBuffer() 결과를 Uint8Array로 직접 변환 후 전달
+//    → Netlify Function 대용량 파일 크래시 원인 해결
 
 export const config = {
   api: { bodyParser: false, responseLimit: false },
@@ -102,8 +106,9 @@ export async function POST(req: NextRequest) {
     let formData: FormData;
     try {
       formData = await req.formData();
-    } catch (e: any) {
-      return jsonError("파일 파싱 실패: " + (e?.message || "알 수 없는 오류"), 400);
+    } catch (e: unknown) {
+      const err = e as Error;
+      return jsonError("파일 파싱 실패: " + (err?.message || "알 수 없는 오류"), 400);
     }
 
     const file = formData.get("file") as File | null;
@@ -117,15 +122,26 @@ export async function POST(req: NextRequest) {
     if (file.size > 20 * 1024 * 1024) return jsonError("파일 크기는 20MB 이하여야 합니다.", 400);
 
     // 파일명/ID 생성
-    const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+    const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
     const id = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-    const storagePath = `${id}.${ext}`;
+    const storagePath = `${id}.${ext || "jpg"}`;
 
-    // ① Storage 업로드
+    console.log("[gallery POST] uploading:", file.name, file.size, "bytes →", storagePath);
+
+    // ① ArrayBuffer 읽기 → Uint8Array 직접 변환
+    //    ✅ Buffer.from(arrayBuffer) 제거: Netlify Node 20의 undici fetch에서
+    //       Buffer를 BodyInit으로 전달 시 Content-Length 0으로 처리되는 버그 방지
     const arrayBuffer = await file.arrayBuffer();
-    await storageUpload(GALLERY_BUCKET, storagePath, Buffer.from(arrayBuffer), mimeType);
+    const uint8Data = new Uint8Array(arrayBuffer);
 
-    // ② DB 메타데이터 저장
+    console.log("[gallery POST] uint8 length:", uint8Data.byteLength);
+
+    // ② Storage 업로드 (PUT upsert — POST는 중복 파일명 시 에러)
+    await storageUpload(GALLERY_BUCKET, storagePath, uint8Data, mimeType);
+
+    console.log("[gallery POST] storage upload OK");
+
+    // ③ DB 메타데이터 저장
     const newItem: GalleryItem = {
       id,
       title,
@@ -140,19 +156,26 @@ export async function POST(req: NextRequest) {
 
     try {
       await dbInsert(GALLERY_TABLE, newItem as unknown as Record<string, unknown>);
-    } catch (dbErr: any) {
+    } catch (dbErr: unknown) {
+      const err = dbErr as Error;
       // DB 실패 시 Storage 롤백
       await storageDelete(GALLERY_BUCKET, [storagePath]);
-      throw dbErr;
+      throw err;
     }
 
-    // ③ Signed URL 발급
+    console.log("[gallery POST] db insert OK");
+
+    // ④ Signed URL 발급
     const signedUrl = await storageSignedUrl(GALLERY_BUCKET, storagePath, 3600);
+
+    console.log("[gallery POST] signed URL OK, returning success");
+
     return NextResponse.json({ ok: true, item: { ...newItem, localPath: signedUrl } });
 
-  } catch (e: any) {
-    console.error("[gallery POST]", e);
-    return jsonError(e?.message || "업로드 실패", 500);
+  } catch (e: unknown) {
+    const err = e as Error;
+    console.error("[gallery POST] FATAL:", err?.message, err?.stack?.slice(0, 500));
+    return jsonError(err?.message || "업로드 실패", 500);
   }
 }
 
@@ -186,8 +209,9 @@ export async function DELETE(req: NextRequest) {
     await dbDelete(GALLERY_TABLE, id);
 
     return NextResponse.json({ ok: true });
-  } catch (e: any) {
-    console.error("[gallery DELETE]", e);
-    return jsonError(e?.message || "삭제 실패", 500);
+  } catch (e: unknown) {
+    const err = e as Error;
+    console.error("[gallery DELETE]", err);
+    return jsonError(err?.message || "삭제 실패", 500);
   }
 }
