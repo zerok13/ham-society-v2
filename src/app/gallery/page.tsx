@@ -295,13 +295,25 @@ export default function GalleryPage() {
     try {
       const url = item.localPath;
       if (!url) { alert("다운로드 URL을 찾을 수 없습니다."); return; }
+
+      const fileName = item.original_name || item.filename || "photo.jpg";
+
+      // Cross-Origin URL(Supabase)은 <a download> 속성이 브라우저에서 무시됨
+      // → fetch로 Blob을 가져와 object URL 생성 후 강제 다운로드
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`fetch 실패 (${response.status})`);
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+
       const a = document.createElement("a");
-      a.href = url;
-      a.download = item.original_name || item.filename || "photo.jpg";
-      a.target = "_blank";
+      a.href = objectUrl;
+      a.download = fileName;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
+
+      // 메모리 해제
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 10000);
     } catch { alert("다운로드에 실패했습니다."); }
   };
 
