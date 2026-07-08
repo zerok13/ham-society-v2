@@ -44,6 +44,78 @@ export interface HistoryItem {
 // 공지사항 데이터
 export const notices: Notice[] = [
   {
+    id: 5,
+    title: "[공지] 제 11회 대한혈관외과학회 혈액투석길 연구회 개최 안내 (The 11th KSVS HAM)",
+    date: "2026.07.08",
+    content: `제 11회 대한혈관외과학회 혈액투석길 연구회를 아래와 같이 개최하오니 많은 참석 바랍니다.
+
+■ 행사명: 제 11회 대한혈관외과학회 혈액투석길 연구회
+           (The 11th KSVS Hemodialysis Access Meeting, HAM)
+■ 일  시: 2026년 10월 18일 (일) 8:55 ~ 17:00
+■ 장  소: 세종충남대학교 병원 4층 도담홀
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                   학술대회 프로그램
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+▶ 개회
+  8:55 ~ 9:00   Opening Remark — 김형태 (회장), 이상수 (대한혈관외과학회 이사장)
+
+▶ Session I. Central Venous Catheter (CVC)-related Complications
+  좌장: 이상수 (부산의대), 장정환 (장정환외과)
+
+  9:00 ~ 9:20   Immediate and early complications after CVC placement — 박근명 (인전외과)
+  9:20 ~ 9:40   Cause and prevention of CVC dysfunction — 구경림 (나은길외과)
+  9:40 ~ 10:00  Fibrin sheath disruption does work? — 주윤성 (홀은강안병원)
+  10:00 ~ 10:20 Mangement of CVC-related thrombosis — 안상현 (서울의대)
+  10:20 ~ 10:40 CVC placement in patients with central venous obstruction — 양승부 (을지의대)
+
+  10:40 ~ 11:00 ☕ Coffee Break
+
+▶ Session II. Case presentation: Central Venous Catheter (CVC)-related Complications
+  좌장: 권정남 (원광의대), 변승재 (청맥병원)
+
+  11:00 ~ 11:20 Case 1
+  11:20 ~ 11:40 Case 2
+  11:40 ~ 12:00 Case 3
+  12:00 ~ 12:20 Case 4
+
+  12:20 ~ 13:30 🍽 Lunchen session — 좌장: 김형태 (브이외과)
+  12:20 ~ 13:00 IN.PACT AV DCB: Extending the Life of AV Access — 문진호 (유창현혈관외과)
+
+▶ Session III. Cephalic arch stenosis
+  좌장: 박재훈 (오른외과), 이순천 (광양사랑병원)
+
+  13:30 ~ 13:50 Cephalic arch antomy and its variants and etiology of cephalic arch stenosis — 권준성 (한림의대)
+  13:50 ~ 14:10 Cephalic arch stenting: Choice of stent size and precise depolyment technique — 김동현 (샌팀도담외과)
+  14:10 ~ 14:30 New technologies for cephalic arch stenosis Stent graft, drug-coated balloon and drug-eluting stent — 김현규 (이담외과)
+  14:30 ~ 14:50 Surgical options and their outcomes for cephalic arch stenosis — 솜단 (순천향의대)
+  14:50 ~ 15:10 My treatment algrithm for cephalic arch stenosis — 최찬중 (초이스외과)
+
+  15:10 ~ 15:30 ☕ Coffee Break
+
+▶ Session IV. Case presentation: Cephalic arch stenosis
+  좌장: 이종훈 (이종훈혈관외과), 남우석 (민트병원)
+
+  15:30 ~ 15:50 Case 1
+  15:50 ~ 16:10 Case 2
+  16:10 ~ 16:30 Case 3
+  16:30 ~ 16:50 Case 4
+
+  16:50 ~ 17:00 Closing Remark — 김형태 (회장)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+※ 참가 신청 및 문의: 사무국 (zerok13@gmail.com / 010-2688-5625)
+
+많은 관심과 참여 부탁드립니다.`,
+    isNew: true,
+    category: "공지",
+    priority: "중요",
+  },
+  {
     id: 4,
     title: "[공지] 제 10회 대한혈관외과학회 혈액투석길 연구회 개최 안내 (The 10th KSVS HAM)",
     date: "2026.03.24",
@@ -103,9 +175,9 @@ export const notices: Notice[] = [
 ※ 참가 신청 및 문의: 사무국 (zerok13@gmail.com / 010-2688-5625)
 
 많은 관심과 참여 부탁드립니다.`,
-    isNew: true,
+    isNew: false,
     category: "공지",
-    priority: "중요",
+    priority: "일반",
     image: "/notice-10th-conference.jpg",
   },
   {
@@ -140,13 +212,23 @@ export const notices: Notice[] = [
 // 학술행사 일정
 export const events: Event[] = [
   {
+    id: 11,
+    title: "제 11회 대한혈관외과학회 혈액투석길 연구회 (The 11th KSVS HAM)",
+    date: "2026.10.18",
+    location: "세종충남대학교 병원 4층 도담홀",
+    time: "8:55 ~ 17:00",
+    description: "제 11회 대한혈관외과학회 혈액투석길 연구회 (The 11th KSVS Hemodialysis Access Meeting, HAM)\n\nSession I. Central Venous Catheter (CVC)-related Complications\n좌장: 이상수 (부산의대), 장정환 (장정환외과)\n\nSession II. Case presentation: CVC-related Complications\n좌장: 권정남 (원광의대), 변승재 (청맥병원)\n\nSession III. Cephalic arch stenosis\n좌장: 박재훈 (오른외과), 이순천 (광양사랑병원)\n\nSession IV. Case presentation: Cephalic arch stenosis\n좌장: 이종훈 (이종훈혈관외과), 남우석 (민트병원)",
+    isUpcoming: true,
+    type: "정기 학술대회",
+  },
+  {
     id: 10,
     title: "제 10회 대한혈관외과학회 혈액투석길 연구회 (The 10th KSVS HAM)",
     date: "2026.04.25",
     location: "대전 충남대학교 병원 본관 2층 고위과정 강의실",
     time: "15:00 ~ 18:30 (등록 14:50)",
     description: "제 10회 대한혈관외과학회 혈액투석길 연구회 (The 10th KSVS Hemodialysis Access Meeting, HAM)\n\nSession 1. Discussion of Interesting Cases\n좌장: 유창현 (유창현외과), 안문상 (충남대병원)\n\nSession 2. Discussion of Complex Cases\n좌장: 박제훈 (오른외과), 이순천 (광양사랑병원)\n\n각 세션은 10개의 케이스 발표 (발표 5분 + 토론 5분) 로 구성됩니다.",
-    isUpcoming: true,
+    isUpcoming: false,
     type: "정기 학술대회",
   },
   {
@@ -316,7 +398,8 @@ export const history: HistoryItem[] = [
     year: "2026",
     events: [
       "제 9회 대한혈관외과학회 혈액투석길 연구회 개최 (1월, 대구)",
-      "제 10회 대한혈관외과학회 혈액투석길 연구회 개최 예정 (4월, 대전)",
+      "제 10회 대한혈관외과학회 혈액투석길 연구회 개최 (4월, 대전)",
+      "제 11회 대한혈관외과학회 혈액투석길 연구회 개최 예정 (10월, 세종충남대학교 병원)",
     ],
   },
   {
