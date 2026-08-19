@@ -1,6 +1,9 @@
 [build]
-  command = "bunx prisma generate && bun run build"
+  command = "npx prisma generate && npm run build"
   publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
 
 [functions]
   # Prisma Client는 외부 모듈로 처리 (번들 크기 초과 방지)

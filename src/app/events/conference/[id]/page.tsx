@@ -118,10 +118,10 @@ export default async function ConferenceDetailPage({ params }: PageProps) {
                       <tr className="bg-[#1a2e5a] text-white">
                         <th className="px-4 py-2.5 text-left w-40">시간</th>
                         <th className="px-4 py-2.5 text-left">내용</th>
-                        <th className="px-4 py-2.5 text-left w-56">발표자</th>
+                        <th className="px-4 py-2.5 text-left w-64">발표자 / 좌장</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y">
+                    <tbody>
                       <tr className="bg-gray-50">
                         <td className="px-4 py-2.5 text-gray-500 font-mono">8:55 – 9:00</td>
                         <td className="px-4 py-2.5 text-gray-800 font-medium">Opening Remark</td>
@@ -136,26 +136,29 @@ export default async function ConferenceDetailPage({ params }: PageProps) {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="bg-[#2e5aa7] text-white">
-                        <th colSpan={3} className="px-4 py-2.5 text-left">
-                          Session I. Central Venous Catheter (CVC)-related Complications
-                          <span className="ml-3 font-normal text-blue-100 text-xs">
-                            좌장: 이상수 (부산의대) · 장정환 (장정환외과)
-                          </span>
+                        <th colSpan={3} className="px-4 py-3 text-left">
+                          <div className="font-bold">Session I. Central Venous Catheter (CVC)-related Complications</div>
+                          <div className="font-normal text-blue-100 text-xs mt-1">
+                            좌장: 유창현 (유창현외과) · 이상수 (부산의대) · 안문상 (충남대병원)
+                          </div>
+                          <div className="font-normal text-blue-200 text-xs">
+                            패널: 권유진 (서울의료원) · 이수용 (나은길외과) · 목상균 (의정부성모병원) · 김경윤 (우주메디웰병원) · 이순정 (창원삼성병원) · 김상우 (브이외과)
+                          </div>
                         </th>
                       </tr>
                       <tr className="bg-blue-50">
                         <th className="px-4 py-2 text-left text-[#1a2e5a] font-semibold w-40">시간</th>
                         <th className="px-4 py-2 text-left text-[#1a2e5a] font-semibold">발표 제목</th>
-                        <th className="px-4 py-2 text-left text-[#1a2e5a] font-semibold w-56">발표자 (소속)</th>
+                        <th className="px-4 py-2 text-left text-[#1a2e5a] font-semibold w-64">발표자 (소속)</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y">
                       {[
-                        ["9:00 – 9:20", "Immediate and early complications after CVC placement", "박근명 (인전외과)"],
+                        ["9:00 – 9:20", "Immediate and early complications after CVC placement", "박근명 (인천외과)"],
                         ["9:20 – 9:40", "Cause and prevention of CVC dysfunction", "구경림 (나은길외과)"],
-                        ["9:40 – 10:00", "Fibrin sheath disruption does work?", "주윤성 (홀은강안병원)"],
+                        ["9:40 – 10:00", "Fibrin sheath distruption does work?", "주윤성 (좋은강안병원)"],
                         ["10:00 – 10:20", "Mangement of CVC-related thrombosis", "안상현 (서울의대)"],
-                        ["10:20 – 10:40", "CVC placement in patients with central venous obstruction", "양승부 (을지의대)"],
+                        ["10:20 – 10:40", "CVC placement in patients with central venous obstruction", "이웅희 (포항성모병원)"],
                       ].map(([time, title, presenter], i) => (
                         <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                           <td className="px-4 py-2.5 text-gray-500 font-mono">{time}</td>
@@ -167,14 +170,40 @@ export default async function ConferenceDetailPage({ params }: PageProps) {
                   </table>
                 </div>
 
-                {/* Coffee Break 1 */}
+                {/* Special Session */}
+                <div className="border rounded-lg overflow-hidden mb-4">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-[#7b4f9e] text-white">
+                        <th colSpan={3} className="px-4 py-3 text-left">
+                          <div className="font-bold">Special Session</div>
+                          <div className="font-normal text-purple-100 text-xs mt-1">
+                            좌장: 윤우성 (루백외과) · 고진 (고하이외과) · 허승 (경북대병원)
+                          </div>
+                          <div className="font-normal text-purple-200 text-xs">
+                            패널: 권수경 (국제성모병원) · 최수진나 (전남대병원) · 추원공 (창원한마음병원) · 김형기 (칠곡경북대병원) · 조원표 (삼천포제일병원)
+                          </div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      <tr className="bg-white">
+                        <td className="px-4 py-2.5 text-gray-500 font-mono w-40">10:40 – 11:00</td>
+                        <td className="px-4 py-2.5 text-gray-800">IRB Application for HAM DCB Registry: What to prepare and submit</td>
+                        <td className="px-4 py-2.5 text-gray-600 w-64">조진현 (경희의대)</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Break */}
                 <div className="border rounded-lg overflow-hidden mb-4">
                   <table className="w-full text-sm">
                     <tbody>
                       <tr className="bg-amber-50">
-                        <td className="px-4 py-2.5 text-gray-500 font-mono w-40">10:40 – 11:00</td>
-                        <td className="px-4 py-2.5 text-amber-700 font-medium">☕ Coffee Break</td>
-                        <td className="px-4 py-2.5 w-56" />
+                        <td className="px-4 py-2.5 text-gray-500 font-mono w-40">11:00 – 11:10</td>
+                        <td className="px-4 py-2.5 text-amber-700 font-medium">☕ Break Time</td>
+                        <td className="px-4 py-2.5 w-64" />
                       </tr>
                     </tbody>
                   </table>
@@ -185,25 +214,28 @@ export default async function ConferenceDetailPage({ params }: PageProps) {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="bg-[#1a4a97] text-white">
-                        <th colSpan={3} className="px-4 py-2.5 text-left">
-                          Session II. Case Presentation: Central Venous Catheter (CVC)-related Complications
-                          <span className="ml-3 font-normal text-blue-100 text-xs">
-                            좌장: 권정남 (원광의대) · 변승재 (청맥병원)
-                          </span>
+                        <th colSpan={3} className="px-4 py-3 text-left">
+                          <div className="font-bold">Session II. Case Presentation: Central Venous Catheter (CVC)-related Complications</div>
+                          <div className="font-normal text-blue-100 text-xs mt-1">
+                            좌장: 소병준 (대자인병원) · 권정남 (원광의대)
+                          </div>
+                          <div className="font-normal text-blue-200 text-xs">
+                            패널: 변승재 (청맥병원) · 박종현 (닥터강심장혈관흉부외과) · 유권철 (충북대학교병원) · 김향경 (이대목동병원) · 김종빈 (에스포항병원)
+                          </div>
                         </th>
                       </tr>
                       <tr className="bg-blue-50">
                         <th className="px-4 py-2 text-left text-[#1a2e5a] font-semibold w-40">시간</th>
-                        <th className="px-4 py-2 text-left text-[#1a2e5a] font-semibold">내용</th>
-                        <th className="px-4 py-2 text-left text-[#1a2e5a] font-semibold w-56">발표자</th>
+                        <th className="px-4 py-2 text-left text-[#1a2e5a] font-semibold">발표 제목</th>
+                        <th className="px-4 py-2 text-left text-[#1a2e5a] font-semibold w-64">발표자 (소속)</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y">
                       {[
-                        ["11:00 – 11:20", "Case 1", ""],
-                        ["11:20 – 11:40", "Case 2", ""],
-                        ["11:40 – 12:00", "Case 3", ""],
-                        ["12:00 – 12:20", "Case 4", ""],
+                        ["11:10 – 11:30", "Case 1. Central Venous Catheter (CVC)-related Complications", "김세준 (삼성퍼스트외과)"],
+                        ["11:30 – 11:50", "Case 2. Overcoming brachiocephalic vein jailing: From catheter to functional AVF", "유영섭 (대자인병원)"],
+                        ["11:50 – 12:10", "Case 3. Rt. brachiocephalic vein thrombosis due to permanent catheter", "고명현 (세종충남대병원)"],
+                        ["12:10 – 12:30", "Case 4. Malposition of central venous catheter tip", "김영균 (세이브외과)"],
                       ].map(([time, title, presenter], i) => (
                         <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                           <td className="px-4 py-2.5 text-gray-500 font-mono">{time}</td>
@@ -215,28 +247,31 @@ export default async function ConferenceDetailPage({ params }: PageProps) {
                   </table>
                 </div>
 
-                {/* Lunch Session */}
+                {/* Luncheon Session */}
                 <div className="border rounded-lg overflow-hidden mb-4">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="bg-[#5a7a2e] text-white">
-                        <th colSpan={3} className="px-4 py-2.5 text-left">
-                          🍽 Lunch Session
-                          <span className="ml-3 font-normal text-green-100 text-xs">
-                            좌장: 김형태 (브이외과)
-                          </span>
+                        <th colSpan={3} className="px-4 py-3 text-left">
+                          <div className="font-bold">🍽 Luncheon Session</div>
+                          <div className="font-normal text-green-100 text-xs mt-1">
+                            좌장: 김형태 (브이외과) · 최수진나 (전남대병원)
+                          </div>
+                          <div className="font-normal text-green-200 text-xs">
+                            패널: 김경윤 (우주메디웰의원) · 박관태 (강남베드로병원) · 김초신 (영남대병원) · 김장용 (서울성모병원) · 한규담 (전주예수병원)
+                          </div>
                         </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y">
                       <tr className="bg-white">
-                        <td className="px-4 py-2.5 text-gray-500 font-mono w-40">12:20 – 13:00</td>
+                        <td className="px-4 py-2.5 text-gray-500 font-mono w-40">12:30 – 13:10</td>
                         <td className="px-4 py-2.5 text-gray-800">IN.PACT AV DCB: Extending the Life of AV Access</td>
-                        <td className="px-4 py-2.5 text-gray-600 w-56">문진호 (유창현혈관외과)</td>
+                        <td className="px-4 py-2.5 text-gray-600 w-64">문진호 (유창현혈관외과)</td>
                       </tr>
                       <tr className="bg-gray-50">
-                        <td className="px-4 py-2.5 text-gray-500 font-mono">13:00 – 13:30</td>
-                        <td className="px-4 py-2.5 text-amber-700 font-medium">🍱 점심식사</td>
+                        <td className="px-4 py-2.5 text-gray-500 font-mono">13:10 – 13:30</td>
+                        <td className="px-4 py-2.5 text-amber-700 font-medium">☕ Break Time</td>
                         <td className="px-4 py-2.5" />
                       </tr>
                     </tbody>
@@ -248,25 +283,28 @@ export default async function ConferenceDetailPage({ params }: PageProps) {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="bg-[#2e5aa7] text-white">
-                        <th colSpan={3} className="px-4 py-2.5 text-left">
-                          Session III. Cephalic Arch Stenosis
-                          <span className="ml-3 font-normal text-blue-100 text-xs">
+                        <th colSpan={3} className="px-4 py-3 text-left">
+                          <div className="font-bold">Session III. Cephalic Arch Stenosis</div>
+                          <div className="font-normal text-blue-100 text-xs mt-1">
                             좌장: 박재훈 (오른외과) · 이순천 (광양사랑병원)
-                          </span>
+                          </div>
+                          <div className="font-normal text-blue-200 text-xs">
+                            패널: 정혁재 (부산대병원) · 송민상 (동래외과) · 구경림 (나은길외과) · 이호균 (전남대병원) · 조성신 (강동경희대병원) · 박제형 (봉생기념병원)
+                          </div>
                         </th>
                       </tr>
                       <tr className="bg-blue-50">
                         <th className="px-4 py-2 text-left text-[#1a2e5a] font-semibold w-40">시간</th>
                         <th className="px-4 py-2 text-left text-[#1a2e5a] font-semibold">발표 제목</th>
-                        <th className="px-4 py-2 text-left text-[#1a2e5a] font-semibold w-56">발표자 (소속)</th>
+                        <th className="px-4 py-2 text-left text-[#1a2e5a] font-semibold w-64">발표자 (소속)</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y">
                       {[
-                        ["13:30 – 13:50", "Cephalic arch anatomy and its variants and etiology of cephalic arch stenosis", "권준성 (한림의대)"],
-                        ["13:50 – 14:10", "Cephalic arch stenting: Choice of stent size and precise deployment technique", "김동현 (샌텀도담외과)"],
-                        ["14:10 – 14:30", "New technologies for cephalic arch stenosis: Stent graft, drug-coated balloon and drug-eluting stent", "김현규 (이담외과)"],
-                        ["14:30 – 14:50", "Surgical options and their outcomes for cephalic arch stenosis", "숨단 (순천향의대)"],
+                        ["13:30 – 13:50", "Cephalic arch anatomy and its variants and etiology of cephalic arch stenosis", "권준성 (초이스외과)"],
+                        ["13:50 – 14:10", "Cephalic arch stenting: Choice of stent size and precise deployment technique", "김동현 (센텀도담외과)"],
+                        ["14:10 – 14:30", "New technologies for cephalic arch stenosis: Stent graft, drug-coated balloon and drug-eluting stent", "김송이 (세종충남대병원)"],
+                        ["14:30 – 14:50", "Surgical options and their outcomes for cephalic arch stenosis", "송단 (순천향의대)"],
                         ["14:50 – 15:10", "My treatment algorithm for cephalic arch stenosis", "최찬중 (초이스외과)"],
                       ].map(([time, title, presenter], i) => (
                         <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
@@ -279,14 +317,14 @@ export default async function ConferenceDetailPage({ params }: PageProps) {
                   </table>
                 </div>
 
-                {/* Coffee Break 2 */}
+                {/* Coffee Break */}
                 <div className="border rounded-lg overflow-hidden mb-4">
                   <table className="w-full text-sm">
                     <tbody>
                       <tr className="bg-amber-50">
                         <td className="px-4 py-2.5 text-gray-500 font-mono w-40">15:10 – 15:30</td>
                         <td className="px-4 py-2.5 text-amber-700 font-medium">☕ Coffee Break</td>
-                        <td className="px-4 py-2.5 w-56" />
+                        <td className="px-4 py-2.5 w-64" />
                       </tr>
                     </tbody>
                   </table>
@@ -297,25 +335,28 @@ export default async function ConferenceDetailPage({ params }: PageProps) {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="bg-[#1a4a97] text-white">
-                        <th colSpan={3} className="px-4 py-2.5 text-left">
-                          Session IV. Case Presentation: Cephalic Arch Stenosis
-                          <span className="ml-3 font-normal text-blue-100 text-xs">
-                            좌장: 이종훈 (이종훈혈관외과) · 남우석 (민트병원)
-                          </span>
+                        <th colSpan={3} className="px-4 py-3 text-left">
+                          <div className="font-bold">Session IV. Case Presentation: Cephalic Arch Stenosis</div>
+                          <div className="font-normal text-blue-100 text-xs mt-1">
+                            좌장: 이종훈 (이종훈혈관외과) · 유희철 (전북대병원)
+                          </div>
+                          <div className="font-normal text-blue-200 text-xs">
+                            패널: 주윤성 (좋은강안병원) · 김수진 (신촌세브란스병원) · 남우석 (민트병원) · 이상호 (경북대병원) · 박성수 (세이브외과) · 노영남 (영남대병원)
+                          </div>
                         </th>
                       </tr>
                       <tr className="bg-blue-50">
                         <th className="px-4 py-2 text-left text-[#1a2e5a] font-semibold w-40">시간</th>
-                        <th className="px-4 py-2 text-left text-[#1a2e5a] font-semibold">내용</th>
-                        <th className="px-4 py-2 text-left text-[#1a2e5a] font-semibold w-56">발표자</th>
+                        <th className="px-4 py-2 text-left text-[#1a2e5a] font-semibold">발표 제목</th>
+                        <th className="px-4 py-2 text-left text-[#1a2e5a] font-semibold w-64">발표자 (소속)</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y">
                       {[
-                        ["15:30 – 15:50", "Case 1", ""],
-                        ["15:50 – 16:10", "Case 2", ""],
-                        ["16:10 – 16:30", "Case 3", ""],
-                        ["16:30 – 16:50", "Case 4", ""],
+                        ["15:30 – 15:50", "Case 1. Cephalic arch angioplasty for CAS d/t kinking", "김형태 (브이외과)"],
+                        ["15:50 – 16:10", "Case 2. Recurrent cephalic arch stenosis", "김대환 (나은길외과)"],
+                        ["16:10 – 16:30", "Case 3. Challenging CAS vs. challenged CAS", "고진 (고하이외과)"],
+                        ["16:30 – 16:50", "Case 4. Cephalic arch stenosis - complicated case", "신일용 (신일용외과)"],
                       ].map(([time, title, presenter], i) => (
                         <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                           <td className="px-4 py-2.5 text-gray-500 font-mono">{time}</td>
@@ -334,7 +375,7 @@ export default async function ConferenceDetailPage({ params }: PageProps) {
                       <tr className="bg-[#1a2e5a]/5">
                         <td className="px-4 py-2.5 text-gray-500 font-mono w-40">16:50 – 17:00</td>
                         <td className="px-4 py-2.5 text-[#1a2e5a] font-medium">Closing Remark</td>
-                        <td className="px-4 py-2.5 text-gray-600 w-56">김형태 (회장)</td>
+                        <td className="px-4 py-2.5 text-gray-600 w-64">김형태 (회장)</td>
                       </tr>
                     </tbody>
                   </table>
