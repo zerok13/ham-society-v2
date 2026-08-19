@@ -45,14 +45,14 @@ export interface HistoryItem {
 export const notices: Notice[] = [
   {
     id: 5,
-    title: "[공지] 제 11회 대한혈관외과학회 혈액투석길 연구회 개최 안내 (The 11th KSVS HAM)",
-    date: "2026.07.08",
-    content: `제 11회 대한혈관외과학회 혈액투석길 연구회를 아래와 같이 개최하오니 많은 참석 바랍니다.
+    title: "[공지] 제 11회 대한혈관외과학회 혈액투석길 심포지엄 개최 안내 (The 11th KSVS HAM)",
+    date: "2026.08.19",
+    content: `제 11회 대한혈관외과학회 혈액투석길 심포지엄을 아래와 같이 개최하오니 많은 참석 바랍니다.
 
-■ 행사명: 제 11회 대한혈관외과학회 혈액투석길 연구회
+■ 행사명: 제 11회 대한혈관외과학회 혈액투석길 심포지엄
            (The 11th KSVS Hemodialysis Access Meeting, HAM)
 ■ 일  시: 2026년 10월 18일 (일) 8:55 ~ 17:00
-■ 장  소: 세종충남대학교 병원 4층 도담홀
+■ 장  소: 세종충남대학교병원 4층 도담홀
 
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -60,49 +60,103 @@ export const notices: Notice[] = [
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ▶ 개회
-  8:55 ~ 9:00   Opening Remark — 김형태 (회장), 이상수 (대한혈관외과학회 이사장)
+  8:55 ~ 9:00   Opening Remark
+                김형태 (회장), 이상수 (대한혈관외과학회 이사장)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ▶ Session I. Central Venous Catheter (CVC)-related Complications
-  좌장: 이상수 (부산의대), 장정환 (장정환외과)
+  좌장: 유창현 (유창현외과), 이상수 (부산의대), 안문상 (충남대병원)
+  패널: 권유진 (서울의료원), 이수용 (나은길외과), 목상균 (의정부성모병원),
+        김경윤 (우주메디웰병원), 이순정 (창원삼성병원), 김상우 (브이외과)
 
-  9:00 ~ 9:20   Immediate and early complications after CVC placement — 박근명 (인전외과)
-  9:20 ~ 9:40   Cause and prevention of CVC dysfunction — 구경림 (나은길외과)
-  9:40 ~ 10:00  Fibrin sheath disruption does work? — 주윤성 (홀은강안병원)
-  10:00 ~ 10:20 Mangement of CVC-related thrombosis — 안상현 (서울의대)
-  10:20 ~ 10:40 CVC placement in patients with central venous obstruction — 양승부 (을지의대)
+  9:00 ~ 9:20   Immediate and early complications after CVC placement
+                 박근명 (인천외과)
+  9:20 ~ 9:40   Cause and prevention of CVC dysfunction
+                 구경림 (나은길외과)
+  9:40 ~ 10:00  Fibrin sheath distruption does work?
+                 주윤성 (좋은강안병원)
+  10:00 ~ 10:20 Mangement of CVC-related thrombosis
+                 안상현 (서울의대)
+  10:20 ~ 10:40 CVC placement in patients with central venous obstruction
+                 이웅희 (포항성모병원)
 
-  10:40 ~ 11:00 ☕ Coffee Break
+▶ Special Session (10:40 ~ 11:00)
+  좌장: 윤우성 (루백외과), 고진 (고하이외과), 허승 (경북대병원)
+  패널: 권수경 (국제성모병원), 최수진나 (전남대병원), 추원공 (창원한마음병원),
+        김형기 (칠곡경북대병원), 조원표 (삼천포제일병원)
 
-▶ Session II. Case presentation: Central Venous Catheter (CVC)-related Complications
-  좌장: 권정남 (원광의대), 변승재 (청맥병원)
+  10:40 ~ 11:00 IRB Application for HAM DCB Registry: What to prepare and submit
+                 조진현 (경희의대)
 
-  11:00 ~ 11:20 Case 1
-  11:20 ~ 11:40 Case 2
-  11:40 ~ 12:00 Case 3
-  12:00 ~ 12:20 Case 4
+  11:00 ~ 11:10 Break Time
 
-  12:20 ~ 13:30 🍽 Lunchen session — 좌장: 김형태 (브이외과)
-  12:20 ~ 13:00 IN.PACT AV DCB: Extending the Life of AV Access — 문진호 (유창현혈관외과)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-▶ Session III. Cephalic arch stenosis
+▶ Session II. Case Presentation: Central Venous Catheter (CVC)-related Complications
+  좌장: 소병준 (대자인병원), 권정남 (원광의대)
+  패널: 변승재 (청맥병원), 박종현 (닥터강심장혈관흉부외과), 유권철 (충북대학교병원),
+        김향경 (이대목동병원), 김종빈 (에스포항병원)
+
+  11:10 ~ 11:30 Case 1. Central Venous Catheter (CVC)-related Complications
+                 김세준 (삼성퍼스트외과)
+  11:30 ~ 11:50 Case 2. Overcoming brachiocephalic vein jailing: From catheter to functional AVF
+                 유영섭 (대자인병원)
+  11:50 ~ 12:10 Case 3. Rt. brachiocephalic vein thrombosis due to permanent catheter
+                 고명현 (세종충남대병원)
+  12:10 ~ 12:30 Case 4. Malposition of central venous catheter tip
+                 김영균 (세이브외과)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+▶ Luncheon Session (12:30 ~ 13:30)
+  좌장: 김형태 (브이외과), 최수진나 (전남대병원)
+  패널: 김경윤 (우주메디웰의원), 박관태 (강남베드로병원), 김초신 (영남대병원),
+        김장용 (서울성모병원), 한규담 (전주예수병원)
+
+  12:30 ~ 13:10 IN.PACT AV DCB: Extending the Life of AV Access
+                 문진호 (유창현혈관외과)
+  13:10 ~ 13:30 Break Time
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+▶ Session III. Cephalic Arch Stenosis
   좌장: 박재훈 (오른외과), 이순천 (광양사랑병원)
+  패널: 정혁재 (부산대병원), 송민상 (동래외과), 구경림 (나은길외과),
+        이호균 (전남대병원), 조성신 (강동경희대병원), 박제형 (봉생기념병원)
 
-  13:30 ~ 13:50 Cephalic arch antomy and its variants and etiology of cephalic arch stenosis — 권준성 (한림의대)
-  13:50 ~ 14:10 Cephalic arch stenting: Choice of stent size and precise depolyment technique — 김동현 (샌팀도담외과)
-  14:10 ~ 14:30 New technologies for cephalic arch stenosis Stent graft, drug-coated balloon and drug-eluting stent — 김현규 (이담외과)
-  14:30 ~ 14:50 Surgical options and their outcomes for cephalic arch stenosis — 솜단 (순천향의대)
-  14:50 ~ 15:10 My treatment algrithm for cephalic arch stenosis — 최찬중 (초이스외과)
+  13:30 ~ 13:50 Cephalic arch anatomy and its variants and etiology of cephalic arch stenosis
+                 권준성 (초이스외과)
+  13:50 ~ 14:10 Cephalic arch stenting: Choice of stent size and precise deployment technique
+                 김동현 (센텀도담외과)
+  14:10 ~ 14:30 New technologies for cephalic arch stenosis: Stent graft, drug-coated balloon and drug-eluting stent
+                 김송이 (세종충남대병원)
+  14:30 ~ 14:50 Surgical options and their outcomes for cephalic arch stenosis
+                 송단 (순천향의대)
+  14:50 ~ 15:10 My treatment algorithm for cephalic arch stenosis
+                 최찬중 (초이스외과)
 
-  15:10 ~ 15:30 ☕ Coffee Break
+  15:10 ~ 15:30 Coffee Break
 
-▶ Session IV. Case presentation: Cephalic arch stenosis
-  좌장: 이종훈 (이종훈혈관외과), 남우석 (민트병원)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  15:30 ~ 15:50 Case 1
-  15:50 ~ 16:10 Case 2
-  16:10 ~ 16:30 Case 3
-  16:30 ~ 16:50 Case 4
+▶ Session IV. Case Presentation: Cephalic Arch Stenosis
+  좌장: 이종훈 (이종훈혈관외과), 유희철 (전북대병원)
+  패널: 주윤성 (좋은강안병원), 김수진 (신촌세브란스병원), 남우석 (민트병원),
+        이상호 (경북대병원), 박성수 (세이브외과), 노영남 (영남대병원)
 
+  15:30 ~ 15:50 Case 1. Cephalic arch angioplasty for CAS d/t kinking
+                 김형태 (브이외과)
+  15:50 ~ 16:10 Case 2. Recurrent cephalic arch stenosis
+                 김대환 (나은길외과)
+  16:10 ~ 16:30 Case 3. Challenging CAS vs. challenged CAS
+                 고진 (고하이외과)
+  16:30 ~ 16:50 Case 4. Cephalic arch stenosis - complicated case
+                 신일용 (신일용외과)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+▶ 폐회
   16:50 ~ 17:00 Closing Remark — 김형태 (회장)
 
 
@@ -213,11 +267,11 @@ export const notices: Notice[] = [
 export const events: Event[] = [
   {
     id: 11,
-    title: "제 11회 대한혈관외과학회 혈액투석길 연구회 (The 11th KSVS HAM)",
+    title: "제 11회 대한혈관외과학회 혈액투석길 심포지엄 (The 11th KSVS HAM)",
     date: "2026.10.18",
-    location: "세종충남대학교 병원 4층 도담홀",
+    location: "세종충남대학교병원 4층 도담홀",
     time: "8:55 ~ 17:00",
-    description: "제 11회 대한혈관외과학회 혈액투석길 연구회 (The 11th KSVS Hemodialysis Access Meeting, HAM)\n\nSession I. Central Venous Catheter (CVC)-related Complications\n좌장: 이상수 (부산의대), 장정환 (장정환외과)\n\nSession II. Case presentation: CVC-related Complications\n좌장: 권정남 (원광의대), 변승재 (청맥병원)\n\nSession III. Cephalic arch stenosis\n좌장: 박재훈 (오른외과), 이순천 (광양사랑병원)\n\nSession IV. Case presentation: Cephalic arch stenosis\n좌장: 이종훈 (이종훈혈관외과), 남우석 (민트병원)",
+    description: "제 11회 대한혈관외과학회 혈액투석길 심포지엄 (The 11th KSVS Hemodialysis Access Meeting, HAM)\n\nSession I. Central Venous Catheter (CVC)-related Complications\n좌장: 유창현 (유창현외과), 이상수 (부산의대), 안문상 (충남대병원)\n\nSpecial Session: IRB Application for HAM DCB Registry\n좌장: 윤우성 (루백외과), 고진 (고하이외과), 허승 (경북대병원)\n\nSession II. Case Presentation: CVC-related Complications\n좌장: 소병준 (대자인병원), 권정남 (원광의대)\n\nLuncheon Session: IN.PACT AV DCB\n좌장: 김형태 (브이외과), 최수진나 (전남대병원)\n\nSession III. Cephalic Arch Stenosis\n좌장: 박재훈 (오른외과), 이순천 (광양사랑병원)\n\nSession IV. Case Presentation: Cephalic Arch Stenosis\n좌장: 이종훈 (이종훈혈관외과), 유희철 (전북대병원)",
     isUpcoming: true,
     type: "정기 학술대회",
   },

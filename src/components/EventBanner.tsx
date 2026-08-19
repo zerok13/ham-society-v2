@@ -19,10 +19,10 @@ export function EventBanner() {
               {/* Left - Event Info */}
               <div className="text-center md:text-left">
                 <div className="inline-block px-3 py-1 bg-[#c41e3a] text-white text-xs font-bold rounded-full mb-2">
-                  제11회 학술대회 · 사전 공지
+                  제11회 심포지엄 · 사전 공지
                 </div>
                 <h3 className="text-white text-xl md:text-2xl font-bold mb-1">
-                  대한혈관외과학회 혈액투석길 연구회
+                  대한혈관외과학회 혈액투석길 심포지엄
                 </h3>
                 <p className="text-white/80 text-sm">
                   The 11th KSVS Hemodialysis Access Meeting (HAM)
