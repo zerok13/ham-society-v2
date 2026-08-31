@@ -123,7 +123,7 @@ export const notices: Notice[] = [
 ▶ Session III. Cephalic Arch Stenosis
   좌장: 박재훈 (오른외과), 이순천 (광양사랑병원)
   패널: 정혁재 (부산대병원), 송민상 (동래외과), 구경림 (나은길외과),
-        이호균 (전남대병원), 조성신 (강동경희대병원), 박제형 (봉생기념병원)
+        이호균 (전남대병원), 조성신 (강동경희대병원), 박제형 (봉생기념병원), 정병훈 (JB외과)
 
   13:30 ~ 13:50 Cephalic arch anatomy and its variants and etiology of cephalic arch stenosis
                  권준성 (초이스외과)

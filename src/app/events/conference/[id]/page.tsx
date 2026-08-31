@@ -289,7 +289,7 @@ export default async function ConferenceDetailPage({ params }: PageProps) {
                             좌장: 박재훈 (오른외과) · 이순천 (광양사랑병원)
                           </div>
                           <div className="font-normal text-blue-200 text-xs">
-                            패널: 정혁재 (부산대병원) · 송민상 (동래외과) · 구경림 (나은길외과) · 이호균 (전남대병원) · 조성신 (강동경희대병원) · 박제형 (봉생기념병원)
+                            패널: 정혁재 (부산대병원) · 송민상 (동래외과) · 구경림 (나은길외과) · 이호균 (전남대병원) · 조성신 (강동경희대병원) · 박제형 (봉생기념병원) · 정병훈 (JB외과)
                           </div>
                         </th>
                       </tr>
