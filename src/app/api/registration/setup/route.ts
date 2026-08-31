@@ -62,6 +62,26 @@ export async function GET() {
   }
 }
 
+// DELETE: 테스트 데이터 삭제 (email 파라미터)
+export async function DELETE(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const email = searchParams.get("email");
+  if (!email) {
+    return NextResponse.json({ ok: false, error: "email 파라미터 필요" }, { status: 400 });
+  }
+  const prisma = new PrismaClient();
+  try {
+    await prisma.$executeRaw`
+      DELETE FROM symposium_registrations WHERE email = ${email}
+    `;
+    return NextResponse.json({ ok: true, message: `${email} 삭제 완료` });
+  } catch (e) {
+    return NextResponse.json({ ok: false, error: String(e) }, { status: 500 });
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
 // POST: Prisma $executeRaw 로 테이블 생성
 export async function POST() {
   const prisma = new PrismaClient();
