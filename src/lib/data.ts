@@ -74,9 +74,9 @@ export const notices: Notice[] = [
                  박근명 (인천외과)
   9:20 ~ 9:40   Cause and prevention of CVC dysfunction
                  구경림 (나은길외과)
-  9:40 ~ 10:00  Fibrin sheath distruption does work?
+  9:40 ~ 10:00  Fibrin sheath disruption: does work?
                  주윤성 (좋은강안병원)
-  10:00 ~ 10:20 Mangement of CVC-related thrombosis
+  10:00 ~ 10:20 Management of CVC-related thrombosis
                  안상현 (서울의대)
   10:20 ~ 10:40 CVC placement in patients with central venous obstruction
                  이웅희 (포항성모병원)
@@ -84,7 +84,7 @@ export const notices: Notice[] = [
 ▶ Special Session (10:40 ~ 11:00)
   좌장: 윤우성 (루백외과), 고진 (고하이외과), 허승 (경북대병원)
   패널: 권수경 (국제성모병원), 최수진나 (전남대병원), 추원공 (창원한마음병원),
-        김형기 (칠곡경북대병원), 조원표 (삼천포제일병원)
+        김형기 (칠곡경북대병원), 조원표 (삼천포제일병원), 김익희 (서울삼성의원)
 
   10:40 ~ 11:00 IRB Application for HAM DCB Registry: What to prepare and submit
                  조진현 (경희의대)
@@ -96,7 +96,7 @@ export const notices: Notice[] = [
 ▶ Session II. Case Presentation: Central Venous Catheter (CVC)-related Complications
   좌장: 소병준 (대자인병원), 권정남 (원광의대)
   패널: 변승재 (청맥병원), 박종현 (닥터강심장혈관흉부외과), 유권철 (충북대학교병원),
-        김향경 (이대목동병원), 김종빈 (에스포항병원)
+        김향경 (이대목동병원), 김종빈 (에스포항병원), 이현용 (순천향대학교 천안병원)
 
   11:10 ~ 11:30 Case 1. Central Venous Catheter (CVC)-related Complications
                  김세준 (삼성퍼스트외과)
@@ -112,7 +112,7 @@ export const notices: Notice[] = [
 ▶ Luncheon Session (12:30 ~ 13:30)
   좌장: 김형태 (브이외과), 최수진나 (전남대병원)
   패널: 김경윤 (우주메디웰의원), 박관태 (강남베드로병원), 김초신 (영남대병원),
-        김장용 (서울성모병원), 한규담 (전주예수병원)
+        김장용 (서울성모병원), 한규담 (전주예수병원), 신장식 (의정부을지대학교병원)
 
   12:30 ~ 13:10 IN.PACT AV DCB: Extending the Life of AV Access
                  문진호 (유창현혈관외과)
