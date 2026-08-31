@@ -105,9 +105,33 @@ function confirmHtml(data: {
   regType: string;
 }) {
   const fee = data.regType === "doctor" ? "10,000원" : "무료";
-  const bankInfo =
+  const bankSection =
     data.regType === "doctor"
-      ? "<p style='margin:8px 0;color:#c41e3a;font-weight:bold;'>입금 계좌: 79423649415 카카오뱅크 (KSVS투석길연구회(9415))</p>"
+      ? `
+    <div style="background:#fff8e1;border:1px solid #f59e0b;border-radius:8px;padding:16px 20px;margin:16px 0;">
+      <p style="margin:0 0 10px;font-weight:bold;color:#92400e;font-size:14px;">💳 등록비 입금 안내</p>
+      <table style="width:100%;font-size:14px;border-collapse:collapse;">
+        <tr>
+          <td style="color:#6b7280;padding:4px 0;width:80px;">계좌번호</td>
+          <td style="color:#111827;font-weight:bold;font-family:monospace;font-size:15px;">79423649415</td>
+        </tr>
+        <tr>
+          <td style="color:#6b7280;padding:4px 0;">은행</td>
+          <td style="color:#111827;font-weight:500;">카카오뱅크</td>
+        </tr>
+        <tr>
+          <td style="color:#6b7280;padding:4px 0;">예금주</td>
+          <td style="color:#111827;font-weight:500;">김형태</td>
+        </tr>
+        <tr>
+          <td style="color:#6b7280;padding:4px 0;">금액</td>
+          <td style="color:#c41e3a;font-weight:bold;">10,000원</td>
+        </tr>
+      </table>
+      <p style="margin:10px 0 0;font-size:12px;color:#92400e;">
+        ※ 반드시 등록 시 기재한 <strong>성명</strong>으로 입금해주세요.
+      </p>
+    </div>`
       : "";
   return `
 <div style="font-family:'Noto Sans KR',sans-serif;max-width:600px;margin:0 auto;background:#f9fafb;border-radius:12px;overflow:hidden;">
@@ -120,7 +144,10 @@ function confirmHtml(data: {
   <div style="padding:28px 32px;background:white;">
     <p style="margin:0 0 16px;color:#374151;">안녕하세요, <strong>${data.name}</strong>님.</p>
     <p style="margin:0 0 20px;color:#374151;line-height:1.6;">
-      제 11회 HAM 심포지엄 사전등록이 정상적으로 접수되었습니다.
+      제 11회 HAM 심포지엄 사전등록 신청이 접수되었습니다.<br/>
+      ${data.regType === "doctor"
+        ? "아래 계좌로 등록비를 입금해 주시면 <strong>입금 확인 후 최종 등록 완료 메일</strong>을 보내드립니다."
+        : "등록비가 무료이므로 별도 입금 없이 <strong>사전등록이 완료</strong>되었습니다."}
     </p>
     <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:20px;">
       <tr style="background:#f3f4f6;">
@@ -140,7 +167,7 @@ function confirmHtml(data: {
         <td style="padding:10px 14px;color:#111827;font-weight:500;">${fee}</td>
       </tr>
     </table>
-    ${bankInfo}
+    ${bankSection}
     <div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:14px 16px;border-radius:4px;margin:16px 0;font-size:13px;line-height:1.6;color:#92400e;">
       <strong>※ 주의사항</strong><br/>
       반드시 온라인 사전등록 신청 <strong>및</strong> 등록비 입금을 모두 완료하셔야 합니다.<br/>

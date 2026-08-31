@@ -82,11 +82,20 @@ export default function RegisterPage() {
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="w-10 h-10 text-green-600" />
           </div>
-          <h2 className="text-2xl font-bold text-[#1a2e5a] mb-3">사전등록이 완료되었습니다!</h2>
-          <p className="text-gray-600 mb-2">
-            입력하신 이메일로 접수 확인 메일이 발송되었습니다.
+          <h2 className="text-2xl font-bold text-[#1a2e5a] mb-3">사전등록 신청이 접수되었습니다!</h2>
+          <p className="text-gray-600 mb-1">
+            접수 확인 메일이 발송되었습니다.
           </p>
-          <p className="text-gray-500 text-sm mb-8">
+          {isDoctor ? (
+            <p className="text-gray-600 mb-6 font-medium">
+              등록비 입금 확인 후 <span className="text-[#1a2e5a] font-bold">최종 등록 완료 메일</span>을 보내드립니다.
+            </p>
+          ) : (
+            <p className="text-gray-600 mb-6">
+              등록비 무료 대상으로 사전등록이 완료되었습니다.
+            </p>
+          )}
+          <p className="text-gray-400 text-xs mb-8">
             (메일을 받지 못하셨을 경우 스팸함을 확인해주세요)
           </p>
 
@@ -96,18 +105,19 @@ export default function RegisterPage() {
                 <Banknote className="w-4 h-4" />
                 등록비 입금 안내
               </p>
-              <p className="text-amber-700 text-sm leading-relaxed mb-2">
-                등록비 <strong>10,000원</strong>을 아래 계좌로 입금해주세요.
+              <p className="text-amber-700 text-sm leading-relaxed mb-3">
+                등록비 <strong>10,000원</strong>을 아래 계좌로 입금해주세요.<br/>
+                입금 확인 후 최종 등록 완료 메일이 발송됩니다.
               </p>
               <div className="bg-white border border-amber-200 rounded-lg p-3 mb-3">
-                <p className="font-mono font-bold text-base text-amber-900">79423649415</p>
-                <p className="text-sm text-amber-700">카카오뱅크 · KSVS투석길연구회(9415)</p>
+                <p className="font-mono font-bold text-lg text-amber-900">79423649415</p>
+                <p className="text-sm text-amber-700">카카오뱅크 · 김형태</p>
               </div>
               <p className="text-amber-600 text-xs">
                 ※ 반드시 등록 시 기재한 <strong>성명</strong>으로 입금해주세요.
               </p>
               <p className="text-amber-600 text-xs mt-1">
-                ※ 마감일(9월 30일) 이전까지 입금 완료하지 않을 경우 자동 취소됩니다.
+                ※ 마감일(9월 30일) 이전까지 입금 미완료 시 자동 취소됩니다.
               </p>
             </div>
           )}
@@ -242,7 +252,7 @@ export default function RegisterPage() {
             </p>
             <div className="bg-white border border-amber-200 rounded-lg p-3 mb-2">
               <p className="font-mono font-bold text-base text-amber-900">79423649415</p>
-              <p className="text-sm text-amber-700">카카오뱅크 · KSVS투석길연구회(9415)</p>
+              <p className="text-sm text-amber-700">카카오뱅크 · 김형태</p>
             </div>
             <p className="text-amber-600 text-xs">
               ※ 반드시 등록 시 기재한 <strong>성명</strong>으로 입금하셔야 합니다.
