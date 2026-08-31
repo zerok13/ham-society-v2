@@ -5,6 +5,9 @@ const SUPABASE_URL =
   process.env.SUPABASE_URL ||
   "https://xrvbwnfntfdvarvqpqcq.supabase.co";
 
+// Supabase 프로젝트 ref (URL에서 추출)
+const SUPABASE_PROJECT_REF = SUPABASE_URL.replace("https://", "").replace(".supabase.co", "").split(".")[0];
+
 const TABLE = "symposium_registrations";
 
 function getServiceKey(): string {
@@ -23,6 +26,54 @@ function adminHeaders(extra: Record<string, string> = {}) {
     "Content-Type": "application/json",
     ...extra,
   };
+}
+
+// ── 테이블 자동 생성 ──────────────────────────────────────────
+async function ensureTableExists(): Promise<boolean> {
+  const key = getServiceKey();
+
+  // Supabase Management API로 SQL 실행
+  const sql = `
+    CREATE TABLE IF NOT EXISTS ${TABLE} (
+      id              SERIAL PRIMARY KEY,
+      event_id        INTEGER NOT NULL DEFAULT 11,
+      name            TEXT NOT NULL,
+      resident_number TEXT NOT NULL,
+      affiliation     TEXT NOT NULL,
+      license_number  TEXT NOT NULL,
+      role            TEXT,
+      phone           TEXT NOT NULL,
+      email           TEXT NOT NULL,
+      bank_account    TEXT,
+      reg_type        TEXT NOT NULL CHECK (reg_type IN ('doctor','medical')),
+      status          TEXT NOT NULL DEFAULT 'pending',
+      created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+  `;
+
+  try {
+    const res = await fetch(
+      `https://api.supabase.com/v1/projects/${SUPABASE_PROJECT_REF}/database/query`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${key}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query: sql }),
+      }
+    );
+    if (res.ok) {
+      console.log("[registration] table ensured via management API");
+      return true;
+    }
+    const errBody = await res.text();
+    console.error("[registration] management API error:", res.status, errBody);
+    return false;
+  } catch (e) {
+    console.error("[registration] ensureTable error:", e);
+    return false;
+  }
 }
 
 // ── 이메일 발송 (Resend) ─────────────────────────────────────
@@ -106,6 +157,15 @@ function confirmHtml(data: {
 </div>`;
 }
 
+// ── 실제 INSERT 시도 ──────────────────────────────────────────
+async function doInsert(row: Record<string, unknown>) {
+  return fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`, {
+    method: "POST",
+    headers: adminHeaders({ Prefer: "return=minimal" }),
+    body: JSON.stringify(row),
+  });
+}
+
 // ── POST handler ─────────────────────────────────────────────
 export async function POST(req: Request) {
   try {
@@ -142,37 +202,63 @@ export async function POST(req: Request) {
       }
     }
 
-    // Supabase 저장
-    const insertRes = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE}`, {
-      method: "POST",
-      headers: adminHeaders({ Prefer: "return=minimal" }),
-      body: JSON.stringify({
-        name,
-        resident_number: residentNumber,
-        affiliation,
-        license_number: licenseNumber,
-        role: role || "",
-        phone,
-        email,
-        bank_account: bankAccount || "",
-        reg_type: regType,
-        event_id: 11,
-        status: "pending",
-      }),
-    });
+    const row = {
+      name,
+      resident_number: residentNumber,
+      affiliation,
+      license_number: licenseNumber,
+      role: role || "",
+      phone,
+      email,
+      bank_account: bankAccount || "",
+      reg_type: regType,
+      event_id: 11,
+      status: "pending",
+    };
 
+    // 1차 INSERT 시도
+    let insertRes = await doInsert(row);
+
+    // 테이블 미존재 시 → 자동 생성 후 재시도
     if (!insertRes.ok) {
       const errText = await insertRes.text();
       console.error("[registration] supabase insert error:", errText);
 
-      // 테이블 미존재 시 안내
-      if (errText.includes("does not exist") || insertRes.status === 404) {
-        return NextResponse.json(
-          { ok: false, error: "등록 테이블이 준비 중입니다. 관리자에게 문의해주세요." },
-          { status: 503 }
-        );
+      const isTableMissing =
+        errText.includes("does not exist") ||
+        errText.includes("relation") ||
+        insertRes.status === 404;
+
+      if (isTableMissing) {
+        console.log("[registration] table missing, attempting auto-create...");
+        const created = await ensureTableExists();
+
+        if (created) {
+          // 재시도
+          insertRes = await doInsert(row);
+
+          if (!insertRes.ok) {
+            const retryErr = await insertRes.text();
+            console.error("[registration] retry insert error:", retryErr);
+            return NextResponse.json(
+              { ok: false, error: "저장 실패. 잠시 후 다시 시도해주세요." },
+              { status: 500 }
+            );
+          }
+          // 재시도 성공 — 이메일 발송으로 진행
+        } else {
+          // 자동 생성도 실패 → Google Sheets 폴백 안내
+          return NextResponse.json(
+            {
+              ok: false,
+              error: "시스템 준비 중입니다. 아래 이메일로 직접 등록 요청 부탁드립니다: zerok13@gmail.com",
+            },
+            { status: 503 }
+          );
+        }
+      } else {
+        return NextResponse.json({ ok: false, error: "저장 실패. 잠시 후 다시 시도해주세요." }, { status: 500 });
       }
-      return NextResponse.json({ ok: false, error: "저장 실패. 잠시 후 다시 시도해주세요." }, { status: 500 });
     }
 
     // 확인 이메일 발송
