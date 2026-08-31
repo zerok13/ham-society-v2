@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { X, Calendar, MapPin, Clock, ChevronRight } from "lucide-react";
+import { X, Calendar, MapPin, Clock, ChevronRight, ClipboardList } from "lucide-react";
 
 const POPUP_STORAGE_KEY = "ham_popup_closed_11th";
 
@@ -124,15 +124,25 @@ export function AnnouncementPopup() {
             </ul>
           </div>
 
-          {/* 자세히 보기 버튼 */}
-          <Link
-            href="/events/conference/11"
-            onClick={handleClose}
-            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[#1a2e5a] hover:bg-[#2e5aa7] text-white font-semibold text-sm transition-colors"
-          >
-            프로그램 자세히 보기
-            <ChevronRight className="w-4 h-4" />
-          </Link>
+          {/* 버튼 2개: 프로그램 + 사전등록 */}
+          <div className="flex gap-2">
+            <Link
+              href="/events/conference/11"
+              onClick={handleClose}
+              className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl bg-[#1a2e5a] hover:bg-[#2e5aa7] text-white font-semibold text-sm transition-colors"
+            >
+              프로그램 보기
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+            <Link
+              href="/events/register"
+              onClick={handleClose}
+              className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-xl bg-[#c41e3a] hover:bg-[#a01830] text-white font-semibold text-sm transition-colors"
+            >
+              <ClipboardList className="w-4 h-4" />
+              사전등록
+            </Link>
+          </div>
         </div>
 
         {/* 하단 — 오늘 하루 닫기 */}

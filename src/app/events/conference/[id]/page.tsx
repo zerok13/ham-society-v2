@@ -2,7 +2,7 @@ import { PageLayout } from "@/components/PageLayout";
 import { events } from "@/lib/data";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Calendar, MapPin, Clock, Users, Download, FileText } from "lucide-react";
+import { ArrowLeft, Calendar, MapPin, Clock, Users, Download, FileText, ClipboardList } from "lucide-react";
 import { notFound } from "next/navigation";
 
 interface PageProps {
@@ -55,23 +55,37 @@ export default async function ConferenceDetailPage({ params }: PageProps) {
 
           {/* Header Banner */}
           <div className="bg-gradient-to-r from-[#1a2e5a] via-[#2e5aa7] to-[#4a90c9] p-8 text-white">
-            <div className="flex items-center gap-2 mb-3">
-              {event.isUpcoming ? (
-                <span className="px-3 py-1 bg-[#c41e3a] text-white text-sm font-medium rounded-full">
-                  예정된 행사
-                </span>
-              ) : (
-                <span className="px-3 py-1 bg-gray-500 text-white text-sm font-medium rounded-full">
-                  종료된 행사
-                </span>
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-3">
+                  {event.isUpcoming ? (
+                    <span className="px-3 py-1 bg-[#c41e3a] text-white text-sm font-medium rounded-full">
+                      예정된 행사
+                    </span>
+                  ) : (
+                    <span className="px-3 py-1 bg-gray-500 text-white text-sm font-medium rounded-full">
+                      종료된 행사
+                    </span>
+                  )}
+                </div>
+                <h1 className="text-2xl md:text-3xl font-bold mb-2">
+                  {event.title}
+                </h1>
+                <p className="text-white/80">
+                  Hemodialysis Access Meeting (HAM)
+                </p>
+              </div>
+              {/* 사전등록 버튼 — 예정된 행사만 */}
+              {event.isUpcoming && event.id === 11 && (
+                <Link
+                  href="/events/register"
+                  className="flex-shrink-0 flex items-center gap-2 px-5 py-3 bg-[#c41e3a] hover:bg-[#a01830] text-white font-bold text-sm rounded-xl shadow-lg transition-all hover:scale-105 whitespace-nowrap"
+                >
+                  <ClipboardList className="w-4 h-4" />
+                  사전등록
+                </Link>
               )}
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold mb-2">
-              {event.title}
-            </h1>
-            <p className="text-white/80">
-              Hemodialysis Access Meeting (HAM)
-            </p>
           </div>
 
           {/* Event Details */}
@@ -379,6 +393,21 @@ export default async function ConferenceDetailPage({ params }: PageProps) {
                       </tr>
                     </tbody>
                   </table>
+                </div>
+
+                {/* 사전등록 CTA */}
+                <div className="mt-6 bg-gradient-to-r from-[#1a2e5a] to-[#2e5aa7] rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div>
+                    <p className="text-white font-bold text-base mb-1">사전등록 접수 중</p>
+                    <p className="text-white/70 text-sm">마감: 2026년 9월 30일(수) 23:59 · 대한의사협회 평점 6점</p>
+                  </div>
+                  <Link
+                    href="/events/register"
+                    className="flex-shrink-0 flex items-center gap-2 px-6 py-3 bg-[#c41e3a] hover:bg-[#a01830] text-white font-bold text-sm rounded-xl shadow-lg transition-all hover:scale-105 whitespace-nowrap"
+                  >
+                    <ClipboardList className="w-4 h-4" />
+                    사전등록하기
+                  </Link>
                 </div>
               </div>
             )}
