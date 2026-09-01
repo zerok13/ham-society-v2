@@ -2,10 +2,11 @@
 
 import { PageLayout } from "@/components/PageLayout";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   UserCheck, UserX, RefreshCw, ShieldAlert,
   Bell, Calendar, FileText, Users,
-  PlusCircle, Pencil, Trash2, X, Check,
+  PlusCircle, Pencil, Trash2, X, Check, ClipboardList,
 } from "lucide-react";
 
 // ── 타입 정의 ──────────────────────────────────────────────
@@ -246,6 +247,13 @@ export default function AdminPage() {
               <Icon className="w-4 h-4" /> {label}
             </button>
           ))}
+          {/* 사전등록 관리 — 별도 페이지로 이동 */}
+          <Link
+            href="/admin/registrations"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium bg-[#c41e3a] text-white hover:bg-[#a01830] transition-colors"
+          >
+            <ClipboardList className="w-4 h-4" /> 사전등록 관리
+          </Link>
         </div>
 
         {/* ── 공지사항 탭 ─────────────────────────────── */}
