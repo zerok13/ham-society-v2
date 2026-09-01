@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import nodemailer from "nodemailer";
 
 const SUPABASE_URL =
   process.env.NEXT_PUBLIC_SUPABASE_URL ||
@@ -76,19 +77,23 @@ async function ensureTableExists(): Promise<boolean> {
   }
 }
 
-// ── 이메일 발송 (Resend) ─────────────────────────────────────
+// ── 이메일 발송 (Gmail SMTP) ─────────────────────────────────
 async function sendEmail(to: string, subject: string, html: string) {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
+  const user = process.env.GMAIL_USER;
+  const pass = process.env.GMAIL_APP_PASSWORD;
+  if (!user || !pass) {
+    // 환경변수 미설정 → 서버 로그만 기록 (신청 자체는 성공 처리)
     console.log("[registration] (dev) email to:", to, "subject:", subject);
     return;
   }
   try {
-    const mod = await import("resend");
-    const resend = new mod.Resend(apiKey);
-    await resend.emails.send({
-      from: "HAM 투석길연구회 <onboarding@resend.dev>",
-      to: [to],
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: { user, pass },
+    });
+    await transporter.sendMail({
+      from: `HAM 투석길연구회 <${user}>`,
+      to,
       subject,
       html,
     });
