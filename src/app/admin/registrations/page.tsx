@@ -12,6 +12,8 @@ import {
   ShieldAlert,
   Search,
   Download,
+  AlertTriangle,
+  Send,
 } from "lucide-react";
 
 // ── 타입 ─────────────────────────────────────────────────
@@ -29,6 +31,15 @@ interface Registration {
   bank_account: string;
 }
 
+interface ConfirmResult {
+  id: number;
+  ok: boolean;
+  name?: string;
+  email?: string;
+  mailSent?: boolean;
+  error?: string;
+}
+
 const ADMIN_KEY = "ham_admin_2026";
 
 // ── 유틸 ─────────────────────────────────────────────────
@@ -44,7 +55,8 @@ export default function RegistrationsAdmin() {
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState<{ text: string; type: "ok" | "err" } | null>(null);
+  const [resendKeySet, setResendKeySet] = useState<boolean | null>(null);
+  const [msg, setMsg] = useState<{ text: string; type: "ok" | "err" | "warn"; detail?: string } | null>(null);
 
   // 관리자 인증 확인
   useEffect(() => {
@@ -52,7 +64,7 @@ export default function RegistrationsAdmin() {
     setIsAdmin(ok);
   }, []);
 
-  // 목록 불러오기
+  // 목록 불러오기 (resendKeySet도 함께 수신)
   const fetchRows = useCallback(async () => {
     setLoading(true);
     try {
@@ -61,7 +73,13 @@ export default function RegistrationsAdmin() {
         { headers: { "x-admin-key": ADMIN_KEY } }
       );
       const data = await res.json();
-      if (data.ok) setRows(data.data);
+      if (data.ok) {
+        setRows(data.data);
+        // resendKeySet이 명시적으로 내려올 때만 업데이트
+        if (typeof data.resendKeySet === "boolean") {
+          setResendKeySet(data.resendKeySet);
+        }
+      }
     } catch {
       setMsg({ text: "목록 조회 실패", type: "err" });
     } finally {
@@ -73,12 +91,23 @@ export default function RegistrationsAdmin() {
     if (isAdmin) fetchRows();
   }, [isAdmin, fetchRows]);
 
-  // 완료 처리 (선택 항목)
+  // ── 완료 처리 (pending → confirmed + 메일 발송) ──────────
   async function handleConfirm(ids: number[]) {
     if (ids.length === 0) return;
     const names = rows.filter((r) => ids.includes(r.id)).map((r) => r.name).join(", ");
     if (!confirm(`${names} (${ids.length}명) 입금 확인 처리하고 완료 메일을 발송할까요?`)) return;
 
+    await callConfirmApi(ids, false);
+  }
+
+  // ── 메일만 재발송 (이미 confirmed인 레코드에 force: true) ──
+  async function handleResendMail(id: number, name: string) {
+    if (!confirm(`${name}님에게 완료 메일을 재발송할까요?`)) return;
+    await callConfirmApi([id], true);
+  }
+
+  // ── 공통 API 호출 ─────────────────────────────────────────
+  async function callConfirmApi(ids: number[], force: boolean) {
     setLoading(true);
     try {
       const res = await fetch("/api/registration/confirm", {
@@ -87,24 +116,70 @@ export default function RegistrationsAdmin() {
           "Content-Type": "application/json",
           "x-admin-key": ADMIN_KEY,
         },
-        body: JSON.stringify({ ids }),
+        body: JSON.stringify({ ids, force }),
       });
       const data = await res.json();
-      const successCount = data.results?.filter((r: { ok: boolean }) => r.ok).length ?? 0;
-      const failCount = ids.length - successCount;
 
-      if (successCount > 0) {
-        setMsg({ text: `✅ ${successCount}명 완료 처리 및 메일 발송 완료${failCount > 0 ? ` (${failCount}명 실패)` : ""}`, type: "ok" });
+      // resendKeySet 동기화
+      if (typeof data.resendKeySet === "boolean") {
+        setResendKeySet(data.resendKeySet);
+      }
+
+      const results: ConfirmResult[] = data.results ?? [];
+      const successList = results.filter((r) => r.ok && r.mailSent);
+      const failList = results.filter((r) => !r.ok || !r.mailSent);
+
+      if (successList.length > 0 && failList.length === 0) {
+        // 전체 성공
+        setMsg({
+          text: `✅ ${successList.length}명 메일 발송 완료`,
+          type: "ok",
+          detail: successList.map((r) => `${r.name} (${r.email})`).join(", "),
+        });
+        setSelected(new Set());
+        await fetchRows();
+      } else if (successList.length > 0) {
+        // 일부 성공
+        const failDetail = failList
+          .map((r) => `${r.name ?? `id=${r.id}`}: ${r.error ?? "실패"}`)
+          .join(" | ");
+        setMsg({
+          text: `⚠️ ${successList.length}명 성공 / ${failList.length}명 실패`,
+          type: "warn",
+          detail: `실패: ${failDetail}`,
+        });
         setSelected(new Set());
         await fetchRows();
       } else {
-        setMsg({ text: data.error || "처리 실패", type: "err" });
+        // 전체 실패
+        const failDetail = failList
+          .map((r) => `${r.name ?? `id=${r.id}`}: ${r.error ?? "실패"}`)
+          .join(" | ");
+        setMsg({
+          text: data.error || `❌ 메일 발송 실패 (${failList.length}명)`,
+          type: "err",
+          detail: failDetail,
+        });
       }
     } catch {
       setMsg({ text: "네트워크 오류", type: "err" });
     } finally {
       setLoading(false);
     }
+  }
+
+  // ── 선택된 confirmed 행들에 일괄 메일 재발송 ──────────────
+  async function handleResendSelected() {
+    const confirmedIds = selectedArr.filter(
+      (id) => rows.find((r) => r.id === id)?.status === "confirmed"
+    );
+    if (confirmedIds.length === 0) return;
+    const names = rows
+      .filter((r) => confirmedIds.includes(r.id))
+      .map((r) => r.name)
+      .join(", ");
+    if (!confirm(`${names} (${confirmedIds.length}명)에게 완료 메일을 재발송할까요?`)) return;
+    await callConfirmApi(confirmedIds, true);
   }
 
   // CSV 다운로드
@@ -144,6 +219,7 @@ export default function RegistrationsAdmin() {
   const confirmedCount = rows.filter((r) => r.status === "confirmed").length;
   const selectedArr = Array.from(selected);
   const selectedPending = selectedArr.filter((id) => rows.find((r) => r.id === id)?.status === "pending");
+  const selectedConfirmed = selectedArr.filter((id) => rows.find((r) => r.id === id)?.status === "confirmed");
 
   // ── 인증 실패 화면 ────────────────────────────────────
   if (!isAdmin) {
@@ -186,13 +262,39 @@ export default function RegistrationsAdmin() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-6">
+
+        {/* ⚠️ RESEND_API_KEY 미설정 경고 배너 */}
+        {resendKeySet === false && (
+          <div className="mb-4 flex items-start gap-3 px-4 py-3 bg-amber-50 border border-amber-300 rounded-xl text-sm text-amber-800">
+            <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-semibold">RESEND_API_KEY가 설정되지 않았습니다</p>
+              <p className="text-amber-700 mt-0.5">
+                Netlify 환경변수에 <code className="bg-amber-100 px-1 rounded text-xs font-mono">RESEND_API_KEY</code>를 설정해야 완료 메일이 실제로 발송됩니다.
+                현재 버튼을 눌러도 메일이 발송되지 않습니다.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* 알림 메시지 */}
         {msg && (
-          <div className={`mb-4 px-4 py-3 rounded-lg text-sm font-medium flex items-center justify-between ${
-            msg.type === "ok" ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-700 border border-red-200"
+          <div className={`mb-4 px-4 py-3 rounded-lg text-sm font-medium ${
+            msg.type === "ok"
+              ? "bg-green-50 text-green-700 border border-green-200"
+              : msg.type === "warn"
+              ? "bg-amber-50 text-amber-700 border border-amber-200"
+              : "bg-red-50 text-red-700 border border-red-200"
           }`}>
-            <span>{msg.text}</span>
-            <button onClick={() => setMsg(null)} className="ml-4 opacity-60 hover:opacity-100">✕</button>
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <p>{msg.text}</p>
+                {msg.detail && (
+                  <p className="mt-1 text-xs opacity-80 font-normal break-all">{msg.detail}</p>
+                )}
+              </div>
+              <button onClick={() => setMsg(null)} className="opacity-60 hover:opacity-100 flex-shrink-0">✕</button>
+            </div>
           </div>
         )}
 
@@ -244,8 +346,8 @@ export default function RegistrationsAdmin() {
             />
           </div>
 
-          <div className="flex gap-2 ml-auto">
-            {/* 선택 완료 처리 */}
+          <div className="flex gap-2 ml-auto flex-wrap">
+            {/* 선택된 pending 완료 처리 */}
             {selectedPending.length > 0 && (
               <button
                 onClick={() => handleConfirm(selectedPending)}
@@ -254,6 +356,17 @@ export default function RegistrationsAdmin() {
               >
                 <Mail className="w-4 h-4" />
                 선택 {selectedPending.length}명 완료 처리
+              </button>
+            )}
+            {/* 선택된 confirmed 메일 재발송 */}
+            {selectedConfirmed.length > 0 && (
+              <button
+                onClick={handleResendSelected}
+                disabled={loading}
+                className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-lg text-sm font-medium transition-colors"
+              >
+                <Send className="w-4 h-4" />
+                선택 {selectedConfirmed.length}명 메일 재발송
               </button>
             )}
             {/* CSV 다운로드 */}
@@ -353,6 +466,7 @@ export default function RegistrationsAdmin() {
                       <td className="px-4 py-3 text-gray-400 text-xs whitespace-nowrap">{fmtDate(r.created_at)}</td>
                       <td className="px-4 py-3">
                         {r.status === "pending" ? (
+                          /* pending: 완료 처리 버튼 */
                           <button
                             onClick={() => handleConfirm([r.id])}
                             disabled={loading}
@@ -362,7 +476,15 @@ export default function RegistrationsAdmin() {
                             완료 처리
                           </button>
                         ) : (
-                          <span className="text-xs text-gray-400">발송 완료</span>
+                          /* confirmed: 메일만 재발송 버튼 */
+                          <button
+                            onClick={() => handleResendMail(r.id, r.name)}
+                            disabled={loading}
+                            className="flex items-center gap-1 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 disabled:bg-gray-100 text-blue-600 hover:text-blue-700 border border-blue-200 rounded-lg text-xs font-medium transition-colors whitespace-nowrap"
+                          >
+                            <Send className="w-3 h-3" />
+                            메일 재발송
+                          </button>
                         )}
                       </td>
                     </tr>
