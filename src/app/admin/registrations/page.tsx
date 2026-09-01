@@ -55,7 +55,7 @@ export default function RegistrationsAdmin() {
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(false);
-  const [resendKeySet, setResendKeySet] = useState<boolean | null>(null);
+  const [gmailSet, setGmailSet] = useState<boolean | null>(null);
   const [msg, setMsg] = useState<{ text: string; type: "ok" | "err" | "warn"; detail?: string } | null>(null);
 
   // 관리자 인증 확인
@@ -64,7 +64,7 @@ export default function RegistrationsAdmin() {
     setIsAdmin(ok);
   }, []);
 
-  // 목록 불러오기 (resendKeySet도 함께 수신)
+  // 목록 불러오기 (gmailSet도 함께 수신)
   const fetchRows = useCallback(async () => {
     setLoading(true);
     try {
@@ -75,9 +75,9 @@ export default function RegistrationsAdmin() {
       const data = await res.json();
       if (data.ok) {
         setRows(data.data);
-        // resendKeySet이 명시적으로 내려올 때만 업데이트
-        if (typeof data.resendKeySet === "boolean") {
-          setResendKeySet(data.resendKeySet);
+        // gmailSet이 명시적으로 내려올 때만 업데이트
+        if (typeof data.gmailSet === "boolean") {
+          setGmailSet(data.gmailSet);
         }
       }
     } catch {
@@ -120,9 +120,9 @@ export default function RegistrationsAdmin() {
       });
       const data = await res.json();
 
-      // resendKeySet 동기화
-      if (typeof data.resendKeySet === "boolean") {
-        setResendKeySet(data.resendKeySet);
+      // gmailSet 동기화
+      if (typeof data.gmailSet === "boolean") {
+        setGmailSet(data.gmailSet);
       }
 
       const results: ConfirmResult[] = data.results ?? [];
@@ -263,15 +263,17 @@ export default function RegistrationsAdmin() {
 
       <div className="max-w-6xl mx-auto px-4 py-6">
 
-        {/* ⚠️ RESEND_API_KEY 미설정 경고 배너 */}
-        {resendKeySet === false && (
+        {/* ⚠️ Gmail SMTP 미설정 경고 배너 */}
+        {gmailSet === false && (
           <div className="mb-4 flex items-start gap-3 px-4 py-3 bg-amber-50 border border-amber-300 rounded-xl text-sm text-amber-800">
             <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <p className="font-semibold">RESEND_API_KEY가 설정되지 않았습니다</p>
+              <p className="font-semibold">Gmail 이메일 설정이 되어 있지 않습니다</p>
               <p className="text-amber-700 mt-0.5">
-                Netlify 환경변수에 <code className="bg-amber-100 px-1 rounded text-xs font-mono">RESEND_API_KEY</code>를 설정해야 완료 메일이 실제로 발송됩니다.
-                현재 버튼을 눌러도 메일이 발송되지 않습니다.
+                Netlify 환경변수에
+                <code className="bg-amber-100 px-1 mx-1 rounded text-xs font-mono">GMAIL_USER</code>와
+                <code className="bg-amber-100 px-1 mx-1 rounded text-xs font-mono">GMAIL_APP_PASSWORD</code>를
+                설정해야 메일이 발송됩니다. 현재 버튼을 눌러도 메일이 발송되지 않습니다.
               </p>
             </div>
           </div>

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import nodemailer from "nodemailer";
 
 /**
  * POST /api/registration/confirm
@@ -8,6 +9,8 @@ import { PrismaClient } from "@prisma/client";
  *
  * GET  /api/registration/confirm?status=all|pending|confirmed
  *   → 등록자 목록 조회
+ *
+ * 메일 발송: Gmail SMTP (GMAIL_USER + GMAIL_APP_PASSWORD 환경변수)
  */
 
 const SUPABASE_URL =
@@ -104,24 +107,31 @@ function confirmedHtml(data: {
 </div>`;
 }
 
+// ── Gmail SMTP 트랜스포터 생성 ───────────────────────────
+function createTransporter() {
+  const user = process.env.GMAIL_USER;
+  const pass = process.env.GMAIL_APP_PASSWORD;
+  if (!user || !pass) {
+    throw new Error(
+      "GMAIL_USER 또는 GMAIL_APP_PASSWORD 환경변수가 설정되지 않았습니다. Netlify 환경변수를 확인하세요."
+    );
+  }
+  return nodemailer.createTransport({
+    service: "gmail",
+    auth: { user, pass },
+  });
+}
+
 // ── 이메일 발송 (에러를 throw) ────────────────────────────
 async function sendEmail(to: string, subject: string, html: string): Promise<void> {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    // 개발 환경 or 키 미설정 → 에러로 처리해서 호출자가 알 수 있도록
-    throw new Error("RESEND_API_KEY 환경변수가 설정되지 않았습니다. Netlify 환경변수를 확인하세요.");
-  }
-  const mod = await import("resend");
-  const resend = new mod.Resend(apiKey);
-  const result = await resend.emails.send({
-    from: "HAM 투석길연구회 <onboarding@resend.dev>",
-    to: [to],
+  const transporter = createTransporter();
+  const gmailUser = process.env.GMAIL_USER!;
+  await transporter.sendMail({
+    from: `HAM 투석길연구회 <${gmailUser}>`,
+    to,
     subject,
     html,
   });
-  if (result.error) {
-    throw new Error(`Resend 오류: ${JSON.stringify(result.error)}`);
-  }
 }
 
 // ── POST: 입금 확인 + 완료 메일 발송 ─────────────────────
@@ -132,7 +142,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
 
-  const resendKeySet = !!process.env.RESEND_API_KEY;
+  const gmailSet = !!(process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD);
 
   const prisma = new PrismaClient();
   try {
@@ -200,10 +210,10 @@ export async function POST(req: Request) {
     }
 
     const allOk = results.every((r) => r.ok);
-    return NextResponse.json({ ok: allOk, results, resendKeySet });
+    return NextResponse.json({ ok: allOk, results, gmailSet });
   } catch (e) {
     console.error("[confirm] error:", e);
-    return NextResponse.json({ ok: false, error: String(e), resendKeySet }, { status: 500 });
+    return NextResponse.json({ ok: false, error: String(e), gmailSet }, { status: 500 });
   } finally {
     await prisma.$disconnect();
   }
@@ -232,8 +242,12 @@ export async function GET(req: Request) {
       return NextResponse.json({ ok: false, error: err }, { status: 500 });
     }
     const rows = await res.json();
-    // Resend 키 설정 여부도 함께 반환
-    return NextResponse.json({ ok: true, data: rows, resendKeySet: !!process.env.RESEND_API_KEY });
+    // Gmail 설정 여부도 함께 반환
+    return NextResponse.json({
+      ok: true,
+      data: rows,
+      gmailSet: !!(process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD),
+    });
   } catch (e) {
     return NextResponse.json({ ok: false, error: String(e) }, { status: 500 });
   }
