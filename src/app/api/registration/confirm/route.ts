@@ -114,7 +114,7 @@ async function sendEmail(to: string, subject: string, html: string): Promise<voi
   const mod = await import("resend");
   const resend = new mod.Resend(apiKey);
   const result = await resend.emails.send({
-    from: "HAM 투석길연구회 <no-reply@ksvsham.com>",
+    from: "HAM 투석길연구회 <onboarding@resend.dev>",
     to: [to],
     subject,
     html,
