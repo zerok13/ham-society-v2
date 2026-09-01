@@ -3,10 +3,11 @@ import { PrismaClient } from "@prisma/client";
 
 /**
  * POST /api/registration/confirm
- * body: { id: number }  또는  { ids: number[] }
+ * body: { ids: number[], force?: boolean }
+ *   - force: true → 이미 confirmed여도 메일 재발송
  *
- * 1. symposium_registrations.status → 'confirmed'
- * 2. 최종 등록 완료 메일 발송 (Resend)
+ * GET  /api/registration/confirm?status=all|pending|confirmed
+ *   → 등록자 목록 조회
  */
 
 const SUPABASE_URL =
@@ -103,46 +104,51 @@ function confirmedHtml(data: {
 </div>`;
 }
 
-// ── 이메일 발송 ───────────────────────────────────────────
-async function sendEmail(to: string, subject: string, html: string) {
+// ── 이메일 발송 (에러를 throw) ────────────────────────────
+async function sendEmail(to: string, subject: string, html: string): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
-    console.log("[confirm] (dev) email to:", to);
-    return;
+    // 개발 환경 or 키 미설정 → 에러로 처리해서 호출자가 알 수 있도록
+    throw new Error("RESEND_API_KEY 환경변수가 설정되지 않았습니다. Netlify 환경변수를 확인하세요.");
   }
   const mod = await import("resend");
   const resend = new mod.Resend(apiKey);
-  await resend.emails.send({
+  const result = await resend.emails.send({
     from: "HAM 투석길연구회 <no-reply@ksvsham.com>",
     to: [to],
     subject,
     html,
   });
+  if (result.error) {
+    throw new Error(`Resend 오류: ${JSON.stringify(result.error)}`);
+  }
 }
 
 // ── POST: 입금 확인 + 완료 메일 발송 ─────────────────────
 export async function POST(req: Request) {
-  // 관리자 인증 (서버에서는 헤더로 체크)
   const authHeader = req.headers.get("x-admin-key");
   const adminKey = process.env.ADMIN_SECRET_KEY || "ham_admin_2026";
   if (authHeader !== adminKey) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
 
+  const resendKeySet = !!process.env.RESEND_API_KEY;
+
   const prisma = new PrismaClient();
   try {
     const body = await req.json();
-    // 단건: { id } 또는 다건: { ids: [...] }
     const ids: number[] = body.ids ?? (body.id != null ? [body.id] : []);
+    const force: boolean = body.force === true; // 이미 confirmed여도 메일 재발송
+
     if (ids.length === 0) {
       return NextResponse.json({ ok: false, error: "id 또는 ids 필요" }, { status: 400 });
     }
 
-    const results: { id: number; ok: boolean; error?: string }[] = [];
+    const results: { id: number; ok: boolean; name?: string; email?: string; error?: string; mailSent?: boolean }[] = [];
 
     for (const id of ids) {
       try {
-        // 1. Supabase에서 등록자 정보 조회
+        // 1. DB에서 등록자 정보 조회
         const fetchRes = await fetch(
           `${SUPABASE_URL}/rest/v1/symposium_registrations?id=eq.${id}&select=*`,
           { headers: adminHeaders() }
@@ -152,41 +158,52 @@ export async function POST(req: Request) {
         if (!rows || rows.length === 0) throw new Error(`id=${id} 없음`);
         const reg = rows[0];
 
-        if (reg.status === "confirmed") {
-          results.push({ id, ok: false, error: "이미 완료 처리됨" });
+        // 이미 confirmed인 경우: force가 true면 메일만 재발송, false면 skip
+        if (reg.status === "confirmed" && !force) {
+          results.push({ id, ok: false, name: reg.name, email: reg.email, error: "이미 완료 처리됨 (메일 재발송은 [메일만 발송] 버튼 사용)" });
           continue;
         }
 
-        // 2. status → confirmed 업데이트 (Prisma)
-        await prisma.$executeRaw`
-          UPDATE symposium_registrations
-          SET status = 'confirmed'
-          WHERE id = ${id}
-        `;
+        // 2. status → confirmed 업데이트 (아직 pending인 경우만)
+        if (reg.status !== "confirmed") {
+          await prisma.$executeRaw`
+            UPDATE symposium_registrations
+            SET status = 'confirmed'
+            WHERE id = ${id}
+          `;
+        }
 
         // 3. 완료 메일 발송
-        await sendEmail(
-          reg.email,
-          "[HAM] 제11회 심포지엄 사전등록 최종 완료",
-          confirmedHtml({
-            name: reg.name,
-            affiliation: reg.affiliation,
-            regType: reg.reg_type,
-            role: reg.role || "",
-          })
-        );
+        let mailSent = false;
+        let mailError: string | undefined;
+        try {
+          await sendEmail(
+            reg.email,
+            "[HAM] 제11회 심포지엄 사전등록 최종 완료",
+            confirmedHtml({
+              name: reg.name,
+              affiliation: reg.affiliation,
+              regType: reg.reg_type,
+              role: reg.role || "",
+            })
+          );
+          mailSent = true;
+        } catch (e) {
+          mailError = String(e);
+          console.error(`[confirm] 메일 발송 실패 id=${id}:`, e);
+        }
 
-        results.push({ id, ok: true });
+        results.push({ id, ok: mailSent, name: reg.name, email: reg.email, mailSent, error: mailError });
       } catch (e) {
         results.push({ id, ok: false, error: String(e) });
       }
     }
 
     const allOk = results.every((r) => r.ok);
-    return NextResponse.json({ ok: allOk, results });
+    return NextResponse.json({ ok: allOk, results, resendKeySet });
   } catch (e) {
     console.error("[confirm] error:", e);
-    return NextResponse.json({ ok: false, error: String(e) }, { status: 500 });
+    return NextResponse.json({ ok: false, error: String(e), resendKeySet }, { status: 500 });
   } finally {
     await prisma.$disconnect();
   }
@@ -202,25 +219,21 @@ export async function GET(req: Request) {
 
   try {
     const { searchParams } = new URL(req.url);
-    const status = searchParams.get("status"); // pending | confirmed | all
+    const status = searchParams.get("status");
 
     let url = `${SUPABASE_URL}/rest/v1/symposium_registrations?select=*&order=created_at.desc`;
     if (status && status !== "all") {
       url += `&status=eq.${status}`;
     }
 
-    const res = await fetch(url, {
-      headers: adminHeaders(),
-      cache: "no-store",
-    });
-
+    const res = await fetch(url, { headers: adminHeaders(), cache: "no-store" });
     if (!res.ok) {
       const err = await res.text();
       return NextResponse.json({ ok: false, error: err }, { status: 500 });
     }
-
     const rows = await res.json();
-    return NextResponse.json({ ok: true, data: rows });
+    // Resend 키 설정 여부도 함께 반환
+    return NextResponse.json({ ok: true, data: rows, resendKeySet: !!process.env.RESEND_API_KEY });
   } catch (e) {
     return NextResponse.json({ ok: false, error: String(e) }, { status: 500 });
   }
