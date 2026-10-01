@@ -177,7 +177,7 @@ function confirmHtml(data: {
       <strong>※ 주의사항</strong><br/>
       반드시 온라인 사전등록 신청 <strong>및</strong> 등록비 입금을 모두 완료하셔야 합니다.<br/>
       등록비 미입금 시 별도 통보 없이 자동 취소됩니다.<br/>
-      <strong>사전등록 마감: 2026년 9월 30일(수) 23:59</strong>
+      <strong>사전등록 마감: 2026년 10월 14일(화) 23:59</strong>
     </div>
     <p style="font-size:13px;color:#6b7280;margin:16px 0 0;">
       문의: 010-2688-5625 / zerok13@gmail.com
