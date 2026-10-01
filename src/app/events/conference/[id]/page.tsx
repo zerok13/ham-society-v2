@@ -399,7 +399,7 @@ export default async function ConferenceDetailPage({ params }: PageProps) {
                 <div className="mt-6 bg-gradient-to-r from-[#1a2e5a] to-[#2e5aa7] rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div>
                     <p className="text-white font-bold text-base mb-1">사전등록 접수 중</p>
-                    <p className="text-white/70 text-sm">마감: 2026년 9월 30일(수) 23:59 · 대한의사협회 평점 6점</p>
+                    <p className="text-white/70 text-sm">마감: 2026년 10월 14일(화) 23:59 · 대한의사협회 평점 6점</p>
                   </div>
                   <Link
                     href="/events/register"
