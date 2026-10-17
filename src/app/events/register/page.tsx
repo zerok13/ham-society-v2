@@ -174,7 +174,7 @@ export default function RegisterPage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           <div className="bg-white border border-gray-200 rounded-xl p-3 text-center">
             <p className="text-xs text-gray-500 mb-1">마감일</p>
-            <p className="text-sm font-bold text-[#c41e3a]">10월 14일(화)</p>
+            <p className="text-sm font-bold text-[#c41e3a]">10월 14일(수)</p>
             <p className="text-xs text-gray-400">23:59</p>
           </div>
           <div className="bg-white border border-gray-200 rounded-xl p-3 text-center">
@@ -284,7 +284,7 @@ export default function RegisterPage() {
           {/* 항상 보이는 요약 */}
           <div className="px-4 pb-3 border-t border-blue-100">
             <ul className="mt-2 space-y-1 text-blue-700 leading-relaxed">
-              <li>• 사전등록 마감: <strong>2026년 10월 14일(화) 23:59</strong></li>
+              <li>• 사전등록 마감: <strong>2026년 10월 14일(수) 23:59</strong></li>
               <li>• 대한의사협회 평점: <strong>6점</strong></li>
               <li>• 강의록은 책자 대신 <strong>QR 프로그램북</strong>으로 제공됩니다.</li>
               <li>• <span className="text-[#c41e3a] font-bold">＊</span> 표시 항목은 필수 입력사항입니다. (미기재 시 등록 불가)</li>
