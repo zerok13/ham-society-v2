@@ -272,7 +272,7 @@ export const events: Event[] = [
     location: "세종충남대학교병원 4층 도담홀",
     time: "8:55 ~ 17:00",
     description: "제 11회 대한혈관외과학회 혈액투석길 심포지엄 (The 11th KSVS Hemodialysis Access Meeting, HAM)\n\nSession I. Central Venous Catheter (CVC)-related Complications\n좌장: 유창현 (유창현외과), 이상수 (부산의대), 안문상 (충남대병원)\n\nSpecial Session: IRB Application for HAM DCB Registry\n좌장: 윤우성 (루백외과), 고진 (고하이외과), 허승 (경북대병원)\n\nSession II. Case Presentation: CVC-related Complications\n좌장: 소병준 (대자인병원), 권정남 (원광의대)\n\nLuncheon Session: IN.PACT AV DCB\n좌장: 김형태 (브이외과), 최수진나 (전남대병원)\n\nSession III. Cephalic Arch Stenosis\n좌장: 박재훈 (오른외과), 이순천 (광양사랑병원)\n\nSession IV. Case Presentation: Cephalic Arch Stenosis\n좌장: 이종훈 (이종훈혈관외과), 유희철 (전북대병원)",
-    isUpcoming: true,
+    isUpcoming: false,
     type: "정기 학술대회",
   },
   {
